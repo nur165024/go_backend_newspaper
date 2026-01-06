@@ -35,13 +35,13 @@ func (r *categoryRepository) Create(category *domain.Category) (*domain.Category
 	defer rows.Close()
 
 	if rows.Next() {
-        // Scan RETURNING values
-        err = rows.Scan(&category.ID, &category.CreatedAt, &category.UpdatedAt)
-        if err != nil {
-            return nil, fmt.Errorf("failed to scan returned values: %w", err)
-        }
-        return category, nil
-    }
+		// Scan RETURNING values
+		err = rows.Scan(&category.ID, &category.CreatedAt, &category.UpdatedAt)
+		if err != nil {
+				return nil, fmt.Errorf("failed to scan returned values: %w", err)
+		}
+		return category, nil
+	}
 
 	return nil, fmt.Errorf("no rows returned after insert")
 }

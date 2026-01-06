@@ -43,14 +43,14 @@ func Server() {
 		})
 	})
 
-
 	// user layers
 	userRepo := userInfrastructure.NewUserRepository(db)
-	userServices := userApplication.NewUserService(userRepo)
+	userServices := userApplication.NewUserServices(userRepo)
 	userHandler := userInterfaces.NewUserHandler(userServices)
-
+	
 	// Setup routes
 	setupUserRoutes(router, userHandler)
+	
 
 	// category layers
 	categoryRepo := categoryInfrastructure.NewCategoryRepository(db)

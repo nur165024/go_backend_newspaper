@@ -21,14 +21,20 @@ type User struct {
     UpdatedAt            time.Time  `db:"updated_at" json:"updated_at"`
 }
 
-type CreateUserRequest struct {
+type userRequest struct {
     Name     string `json:"name" binding:"required"`
     UserName string `json:"user_name"`
     Email    string `json:"email" binding:"required,email"`
-    Password string `json:"password" binding:"required,min=6"`
     Designation string `json:"designation"`
     Bio string `json:"bio"`
     ProfilePicture string `json:"profile_picture"`
+    IsActive bool `json:"is_active"`
+    IsVerified bool `json:"is_verified"`
+}
+
+type CreateUserRequest struct {
+    userRequest
+    Password string `json:"password" binding:"required,min=6"`
 }
 
 type LoginUserRequest struct {
@@ -37,12 +43,5 @@ type LoginUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-    Name     string `json:"name"`
-    UserName string `json:"user_name"`
-    Email    string `json:"email"`
-    Designation string `json:"designation"`
-    Bio string `json:"bio"`
-    ProfilePicture string `json:"profile_picture"`
-    IsActive bool `json:"is_active"`
-    IsVerified bool `json:"is_verified"`
+    userRequest
 }

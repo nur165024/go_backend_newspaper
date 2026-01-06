@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Category struct {
 	ID              int    `db:"id" json:"id"`
 	Name            string `db:"name" json:"name"`
@@ -11,8 +13,8 @@ type Category struct {
 	MetaTitle       string `db:"meta_title" json:"meta_title"`
 	MetaDescription string `db:"meta_description" json:"meta_description"`
 	MetaKeywords    string `db:"meta_keywords" json:"meta_keywords"`
-	CreatedAt       string `db:"created_at" json:"created_at"`
-	UpdatedAt       string `db:"updated_at" json:"updated_at"`
+	CreatedAt       time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt       time.Time `db:"updated_at" json:"updated_at"`
 }
 
 // base struct for command filed

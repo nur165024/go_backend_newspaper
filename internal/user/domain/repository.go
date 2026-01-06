@@ -20,11 +20,11 @@ type QueryResult struct {
 }
 
 type UserRepository interface {
-	Create(user *User) error
-	GetByEmail(email string) (*User, error)
-	LoginUser(email, password string) (*User, error)
-	GetByID(id int) (*User, error)
-	Update(user *User) error
+	Create(user *User) (*User, error)
+	Update(id int, user *User) (*User, error)
 	Delete(id int) error
+	GetByID(id int) (*User, error)
+	GetByEmail(email string) (*User, error)
 	GetAll(params *QueryParams) (*QueryResult, error)
+	Login(email, password string) (*User, error)
 }

@@ -17,22 +17,100 @@ func NewUserRepository(db *sqlx.DB) *postgresUserRepository {
 	return &postgresUserRepository{db: db}
 }
 
-// get all users
-func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
-	// set defaults
-	if params.Page == 0 {
-		params.Page = 1
+// create user
+func (r *postgresUserRepository) Create(user *domain.User) (*domain.User, error) {
+	query := `
+	INSERT INTO users (name, user_name, email, password, designation, bio, profile_picture, is_active, is_verified)
+	VALUES (:name, :user_name, :email, :password, :designation, :bio, :profile_picture, :is_active, :is_verified)
+	RETURNING id, created_at, updated_at
+	`
+
+	rows, err := r.db.NamedQuery(query, user)
+	if err != nil {
+		return nil, err
 	}
-	if params.PageSize == 0 {
-		params.PageSize = 10
-	}
-	if params.SortBy == "" {
-		params.SortBy = "id"
-	}
-	if params.Order == "" {
-		params.Order = "DESC"
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+				return nil, fmt.Errorf("failed to scan returned values: %w", err)
+		}
+		return user, nil
 	}
 
+	return nil, fmt.Errorf("no rows returned after insert")
+}
+
+// update user
+func (r *postgresUserRepository) Update(id int, user *domain.User) (*domain.User, error) {
+	query := `
+		UPDATE users 
+		SET 
+		name = :name, 
+		user_name = :user_name, 
+		email = :email, 
+		designation = :designation, 
+		bio = :bio, 
+		profile_picture = :profile_picture,
+		is_active = :is_active, 
+		is_verified = :is_verified, 
+		updated_at = NOW()
+		WHERE id = :id
+		RETURNING updated_at
+	`
+
+	rows, err := r.db.NamedQuery(query, user)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		return user, nil
+	}
+
+	return nil, nil
+}
+
+// delete user
+func (r *postgresUserRepository) Delete(id int) error {
+	query := `DELETE FROM users WHERE id = $1`
+	_, err := r.db.Exec(query, id)
+	return err
+}
+
+// login user
+func (r *postgresUserRepository) Login(email, password string) (*domain.User, error) {
+	query := `SELECT * FROM users WHERE email = $1 AND password = $2`
+
+	var user domain.User
+	err := r.db.Get(&user, query, email, password)
+	return &user, err	
+}
+
+// get by email
+func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error) {
+	query := r.getUserSelectQuery() + " WHERE email = $1"
+
+	var user domain.User
+	err := r.db.Get(&user, query, email)
+	
+	return &user, err
+}
+
+// get by id
+func (r *postgresUserRepository) GetByID(id int) (*domain.User, error) {
+	query := r.getUserSelectQuery() + " WHERE id = $1"
+
+	var user domain.User
+	err := r.db.Get(&user, query, id)
+	return &user, err
+}
+
+// get all users
+func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
 	// Build WHERE clause
 	whereClause, args := r.buildWhereClause(params)
 	
@@ -70,77 +148,6 @@ func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.Que
 		PageSize:   params.PageSize,
 		TotalPages: totalPages,
 	}, nil
-}
-
-// create user
-func (r *postgresUserRepository) Create(user *domain.User) error {
-	query := `
-	INSERT INTO users (name, user_name, email, password, designation, bio, profile_picture, is_active, is_verified)
-	VALUES (:name, :user_name, :email, :password, :designation, :bio, :profile_picture, :is_active, :is_verified)
-	RETURNING id, created_at, updated_at
-	`
-
-	rows, err := r.db.NamedQuery(query, user)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-		return rows.Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
-	}
-
-	return nil
-}
-
-// login user
-func (r *postgresUserRepository) LoginUser(email, password string) (*domain.User, error) {
-	query := `SELECT * FROM users WHERE email = $1 AND password = $2`
-
-	var user domain.User
-	err := r.db.Get(&user, query, email, password)
-	return &user, err	
-}
-
-// get by email
-func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error) {
-	query := r.getUserSelectQuery() + " WHERE email = $1"
-
-	var user domain.User
-	err := r.db.Get(&user, query, email)
-	
-	return &user, err
-}
-
-// get by id
-func (r *postgresUserRepository) GetByID(id int) (*domain.User, error) {
-	query := r.getUserSelectQuery() + " WHERE id = $1"
-
-	var user domain.User
-	err := r.db.Get(&user, query, id)
-	return &user, err
-}
-
-// update user
-func (r *postgresUserRepository) Update(user *domain.User) error {
-	query := `
-		UPDATE users SET 
-			name = :name, user_name = :user_name, email = :email, 
-			designation = :designation, bio = :bio, profile_picture = :profile_picture,
-			is_active = :is_active, is_verified = :is_verified, updated_at = NOW()
-		WHERE id = :id
-		RETURNING updated_at
-		`
-
-	_, err := r.db.NamedQuery(query, user)
-	return err
-}
-
-// delete user
-func (r *postgresUserRepository) Delete(id int) error {
-	query := `DELETE FROM users WHERE id = $1`
-	_, err := r.db.Exec(query, id)
-	return err
 }
 
 // build where clause

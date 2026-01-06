@@ -82,8 +82,6 @@ func (s *categoryServices) GetCategoryByID(id int) (*domain.Category, error) {
 
 // get all
 func (s *categoryServices) GetAllCategories(params *domain.QueryParams) (*domain.QueryResult, error) {
-	fmt.Println("params services",params)
-
 	categories, err := s.categoryRepo.GetAll(params)
 
 	if err != nil {
