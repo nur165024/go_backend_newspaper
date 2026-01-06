@@ -12,19 +12,17 @@ type QueryParams struct {
 }
 
 type QueryResult struct {
-	Data       []*User `json:"data"`
-	TotalItem  int64   `json:"total_item"`
-	Page       int     `json:"page"`
-	PageSize   int     `json:"page_size"`
-	TotalPages int     `json:"total_pages"`
+	Data       []*Category `json:"data"`
+	TotalItem  int64       `json:"total_item"`
+	Page       int         `json:"page"`
+	PageSize   int         `json:"page_size"`
+	TotalPages int         `json:"total_pages"`
 }
 
-type UserRepository interface {
-	Create(user *User) error
-	GetByEmail(email string) (*User, error)
-	LoginUser(email, password string) (*User, error)
-	GetByID(id int) (*User, error)
-	Update(user *User) error
-	Delete(id int) error
+type CategoryRepository interface {
 	GetAll(params *QueryParams) (*QueryResult, error)
+	GetByID(id int) (*Category, error)
+	Create(category *Category) (*Category, error)
+	Update(id int, category *Category) (*Category, error)
+	Delete(id int) error
 }

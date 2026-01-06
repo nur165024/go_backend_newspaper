@@ -10,12 +10,12 @@ import (
 )
 
 type UserHandler struct {
-	userService application.UserService
+	userServices application.UserService
 }
 
-func NewUserHandler(userService application.UserService) *UserHandler {
+func NewUserHandler(userServices application.UserService) *UserHandler {
 	return &UserHandler{
-		userService: userService,
+		userServices: userServices,
 	}
 }
 
@@ -28,10 +28,9 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 		SortBy:   "id",
 		Order:    "DESC",
 		Search: "",
-		Filter: map[string]string{},
 	}
 
-	result, err := h.userService.GetAllUsers(params)
+	result, err := h.userServices.GetAllUsers(params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -45,7 +44,7 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 	userId := c.Param("id")
 	id, _ := strconv.Atoi(userId)
 
-	user, err := h.userService.GetUserByID(id)
+	user, err := h.userServices.GetUserByID(id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -59,7 +58,7 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 func (h *UserHandler) GetUserByEmail(c *gin.Context) {
 	email := c.Param("email")
 
-	user, err := h.userService.GetUserByEmail(email)
+	user, err := h.userServices.GetUserByEmail(email)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -79,7 +78,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.CreateUser(&req)
+	user, err := h.userServices.CreateUser(&req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -98,7 +97,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.LoginUser(req.Email, req.Password)
+	user, err := h.userServices.LoginUser(req.Email, req.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -121,7 +120,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.UpdateUser(id, &req)
+	user, err := h.userServices.UpdateUser(id, &req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -136,7 +135,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	userId := c.Param("id")
 	id, _ := strconv.Atoi(userId)
 
-	err := h.userService.DeleteUser(id)
+	err := h.userServices.DeleteUser(id)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

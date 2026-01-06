@@ -13,7 +13,7 @@ type postgresUserRepository struct {
 	db *sqlx.DB
 }
 
-func NewPostgresUserRepository(db *sqlx.DB) *postgresUserRepository {
+func NewUserRepository(db *sqlx.DB) *postgresUserRepository {
 	return &postgresUserRepository{db: db}
 }
 
@@ -154,15 +154,6 @@ func (r *postgresUserRepository) buildWhereClause(params *domain.QueryParams) (s
 		conditions = append(conditions, fmt.Sprintf("(name ILIKE $%d OR email ILIKE $%d OR user_name ILIKE $%d)", argIndex, argIndex, argIndex))
 		args = append(args, "%"+params.Search+"%")
 		argIndex++
-	}
-
-	// Dynamic filters
-	for key, value := range params.Filter {
-		if value != "" {
-			conditions = append(conditions, fmt.Sprintf("%s = $%d", key, argIndex))
-			args = append(args, value)
-			argIndex++
-		}
 	}
 
 	if len(conditions) > 0 {

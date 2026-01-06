@@ -12,9 +12,9 @@ type userService struct {
 }
 
 func NewUserService(userRepo domain.UserRepository) UserService {
-	return &userService{
-		userRepo: userRepo,
-	}
+    return &userService{
+        userRepo: userRepo,
+    }
 }
 
 // get all users

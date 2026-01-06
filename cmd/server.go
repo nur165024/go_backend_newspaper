@@ -2,9 +2,15 @@ package cmd
 
 import (
 	"gin-quickstart/config"
-	"gin-quickstart/internal/user/application"
-	"gin-quickstart/internal/user/infrastructure"
-	"gin-quickstart/internal/user/interfaces"
+	// category
+	categoryApplication "gin-quickstart/internal/category/application"
+	categoryInfrastructure "gin-quickstart/internal/category/infrastructure"
+	categoryInterfaces "gin-quickstart/internal/category/interfaces"
+
+	// user
+	userApplication "gin-quickstart/internal/user/application"
+	userInfrastructure "gin-quickstart/internal/user/infrastructure"
+	userInterfaces "gin-quickstart/internal/user/interfaces"
 	"gin-quickstart/pkg/database"
 	"net/http"
 
@@ -38,13 +44,21 @@ func Server() {
 	})
 
 
-	// Initialize layers
-	userRepo := infrastructure.NewPostgresUserRepository(db)
-	userService := application.NewUserService(userRepo)
-	userHandler := interfaces.NewUserHandler(userService)
+	// user layers
+	userRepo := userInfrastructure.NewUserRepository(db)
+	userServices := userApplication.NewUserService(userRepo)
+	userHandler := userInterfaces.NewUserHandler(userServices)
 
 	// Setup routes
 	setupUserRoutes(router, userHandler)
+
+	// category layers
+	categoryRepo := categoryInfrastructure.NewCategoryRepository(db)
+	categoryServices := categoryApplication.NewCategoryServices(categoryRepo)
+	categoryHandler := categoryInterfaces.NewCategoryHandler(categoryServices)
+
+	// Setup routes
+	setupCategoryRoutes(router, categoryHandler)
 
 	// SERVER ADDRESS AND ROUTE
 	s := &http.Server{
@@ -56,7 +70,7 @@ func Server() {
 }
 
 // USERS ROUTES
-func setupUserRoutes(router *gin.Engine, userHandler *interfaces.UserHandler) {
+func setupUserRoutes(router *gin.Engine, userHandler *userInterfaces.UserHandler) {
 	userGroup := router.Group("/api/v1/users")
 	{
 		userGroup.GET("/", userHandler.GetAllUsers)
@@ -66,6 +80,19 @@ func setupUserRoutes(router *gin.Engine, userHandler *interfaces.UserHandler) {
 		userGroup.PUT("/:id", userHandler.UpdateUser)
 		userGroup.DELETE("/:id", userHandler.DeleteUser)
 	}
+	
 	// Separate route for email (conflicts with :id)
 	router.GET("/api/v1/users/email/:email", userHandler.GetUserByEmail)
+}
+
+// CATEGORY ROUTES
+func setupCategoryRoutes(router *gin.Engine, categoryHandler *categoryInterfaces.CategoryHandler) {
+	userGroup := router.Group("/api/v1/categories")
+	{
+		userGroup.GET("/", categoryHandler.GetAllCategories)
+		userGroup.POST("/", categoryHandler.CreateCategory)
+		userGroup.GET("/:id", categoryHandler.GetCategoryById)
+		userGroup.PUT("/:id", categoryHandler.UpdateCategory)
+		userGroup.DELETE("/:id", categoryHandler.DeleteCategory)
+	}
 }
