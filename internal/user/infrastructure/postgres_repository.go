@@ -72,34 +72,6 @@ func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.Que
 	}, nil
 }
 
-// build where clause
-func (r *postgresUserRepository) buildWhereClause(params *domain.QueryParams) (string, []interface{}) {
-	var conditions []string
-	var args []interface{}
-	argIndex := 1
-
-	// Search functionality
-	if params.Search != "" {
-		conditions = append(conditions, fmt.Sprintf("(name ILIKE $%d OR email ILIKE $%d OR user_name ILIKE $%d)", argIndex, argIndex, argIndex))
-		args = append(args, "%"+params.Search+"%")
-		argIndex++
-	}
-
-	// Dynamic filters
-	for key, value := range params.Filter {
-		if value != "" {
-			conditions = append(conditions, fmt.Sprintf("%s = $%d", key, argIndex))
-			args = append(args, value)
-			argIndex++
-		}
-	}
-
-	if len(conditions) > 0 {
-		return " WHERE " + strings.Join(conditions, " AND "), args
-	}
-	return "", args
-}
-
 // create user
 func (r *postgresUserRepository) Create(user *domain.User) error {
 	query := `
@@ -169,6 +141,34 @@ func (r *postgresUserRepository) Delete(id int) error {
 	query := `DELETE FROM users WHERE id = $1`
 	_, err := r.db.Exec(query, id)
 	return err
+}
+
+// build where clause
+func (r *postgresUserRepository) buildWhereClause(params *domain.QueryParams) (string, []interface{}) {
+	var conditions []string
+	var args []interface{}
+	argIndex := 1
+
+	// Search functionality
+	if params.Search != "" {
+		conditions = append(conditions, fmt.Sprintf("(name ILIKE $%d OR email ILIKE $%d OR user_name ILIKE $%d)", argIndex, argIndex, argIndex))
+		args = append(args, "%"+params.Search+"%")
+		argIndex++
+	}
+
+	// Dynamic filters
+	for key, value := range params.Filter {
+		if value != "" {
+			conditions = append(conditions, fmt.Sprintf("%s = $%d", key, argIndex))
+			args = append(args, value)
+			argIndex++
+		}
+	}
+
+	if len(conditions) > 0 {
+		return " WHERE " + strings.Join(conditions, " AND "), args
+	}
+	return "", args
 }
 
 // Helper function for consistent SELECT query (add this after NewPostgresUserRepository)
