@@ -35,7 +35,7 @@ func (s *userService) GetAllUsers(params *domain.QueryParams) (*domain.QueryResu
 		return nil, err
 	}
 
-	return ToUserListResponse(result), nil
+	return result, nil
 }
 
 // create user
@@ -80,7 +80,7 @@ func (s *userService) GetUserByID(id int) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ToUserResponse(user), nil
+	return user, nil
 }
 
 // find user by email
@@ -89,7 +89,7 @@ func (s *userService) GetUserByEmail(email string) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ToUserResponse(user), nil
+	return user, nil
 }
 
 // login user
@@ -111,7 +111,7 @@ func (s *userService) LoginUser(email, password string) (*domain.User, error) {
 		return nil, errors.New("invalid email or password")
 	}
 
-	return ToUserResponse(user), nil
+	return user, nil
 }
 
 // update user
