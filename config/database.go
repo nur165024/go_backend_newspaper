@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
+	"gin-quickstart/utils"
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -13,57 +13,42 @@ type DatabaseConfig struct {
 	DBPort     string
 	DBName     string
 	DBUser     string
-	DBPass string
+	DBPass     string
 }
 
-func loadDatabaseConfig() *DatabaseConfig {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file", err)
+func loadDatabaseConfig(envLoader func(string) string) (*DatabaseConfig, error) {
+	config := &DatabaseConfig{
+		DBHost: utils.GetValueOrDefault(envLoader("DB_HOST"), "localhost"),
+		DBPort: utils.GetValueOrDefault(envLoader("DB_PORT"), "5432"),
+		DBName: utils.GetValueOrDefault(envLoader("DB_NAME"), "go_newspaper"),
+		DBUser: utils.GetValueOrDefault(envLoader("DB_USER"), "postgres"),
+		DBPass: utils.GetValueOrDefault(envLoader("DB_PASS"), "1234"),
 	}
 
-	// database host
-	dbHost := os.Getenv("DB_HOST")
-	if dbHost == "" {
-		fmt.Println("Database Host is required!")
-		os.Exit(1)
+	if err := validateDatabaseConfig(config); err != nil {
+		return nil, err
 	}
 
-	// database port
-	dbPort := os.Getenv("DB_PORT")
-	if dbPort == "" {
-		fmt.Println("Database Port is required!")
-		os.Exit(1)
-	}
-	
-	// database name
-	dbName := os.Getenv("DB_NAME")
-	if dbName == "" {
-		fmt.Println("Database Name is required!")
-		os.Exit(1)
-	}
-	// database user
-	dbUser := os.Getenv("DB_USER")
-	if dbUser == "" {
-		fmt.Println("Database User is required!")
-		os.Exit(1)
-	}
-
-	// database password
-	dbPass := os.Getenv("DB_PASS")
-	if dbPass == "" {
-		fmt.Println("Database Password is required!")
-	}
-
-	return &DatabaseConfig{
-		DBHost:     dbHost,
-		DBPort:     dbPort,
-		DBName:     dbName,
-		DBUser:     dbUser,
-		DBPass: dbPass,
-	}
+	return config, nil
 }
 
-func GetDatabaseConfig() *DatabaseConfig {
-	return loadDatabaseConfig()
+func GetDatabaseConfig() (*DatabaseConfig, error) {
+	// Load .env file first
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, using system environment variables")
+	}
+	return loadDatabaseConfig(utils.GetEnv)
+}
+
+func validateDatabaseConfig(config *DatabaseConfig) error {
+	if config.DBName == "" {
+		return fmt.Errorf("database name is required")
+	}
+	if config.DBUser == "" {
+		return fmt.Errorf("database user is required")
+	}
+	if config.DBPass == "" {
+		return fmt.Errorf("database password is required")
+	}
+	return nil
 }

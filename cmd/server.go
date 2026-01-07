@@ -3,10 +3,7 @@ package cmd
 import (
 	"gin-quickstart/cmd/setup"
 	"gin-quickstart/config"
-
-	// category
-
-	// user
+	"log"
 
 	"gin-quickstart/pkg/database"
 	"net/http"
@@ -16,9 +13,17 @@ import (
 
 func Server() {
 	router := gin.Default()
-	serverCnf := config.GetServerConfig()
+	serverCnf, err := config.GetServerConfig()
+	if err != nil {
+		log.Fatal("Failed to load server config:", err)
+	}
 	serverPort := ":" + serverCnf.Port
-	dbCnf := config.GetDatabaseConfig()
+
+	// Load database config with error handling
+	dbCnf, err := config.GetDatabaseConfig()
+	if err != nil {
+		log.Fatal("Failed to load database config:", err)
+	}
 
 	// database connection
 	dbConnection := &database.DatabaseConfig {

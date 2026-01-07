@@ -2,7 +2,10 @@ package main
 
 import (
 	"gin-quickstart/cmd"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -12,4 +15,11 @@ func main() {
 	}
 
 	cmd.Server()
+}
+
+// main.go
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found")
+	}
 }

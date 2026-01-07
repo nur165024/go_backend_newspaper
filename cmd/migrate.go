@@ -15,7 +15,10 @@ import (
 func Migrate() {
 	fmt.Println("Running database migrations...")
 
-	dbCnf := config.GetDatabaseConfig()
+    dbCnf, err := config.GetDatabaseConfig()
+	if err != nil {
+		log.Fatal("Failed to load database config:", err)
+	}
 
 	// database connection
 	dbConnection := &database.DatabaseConfig{
