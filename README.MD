@@ -29,3 +29,25 @@ A RESTful API built with Go, Gin framework, and PostgreSQL.
 ## Environment Variables
 
 Create `.env` file with:
+
+# User
+
+# Category
+
+# News
+
+# News Command
+
+# News Like/Dislike
+
+# Tag
+
+# Poll and Voting
+
+# Newsletters
+
+# Breaking News
+
+# Trending News
+
+# Advertisements
