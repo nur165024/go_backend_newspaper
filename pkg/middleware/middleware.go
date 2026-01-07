@@ -9,15 +9,25 @@ import (
 )
 
 func SetupGlobalMiddleWare(router *gin.Engine) {
-	// rate limit 
-	router.Use(RateLimitMiddleware())
-	// logger
-	router.Use(CustomLogger())
-	// recovery
+	// 1. Recovery
 	router.Use(gin.Recovery())
-	// cors
+	
+	// 2. Security Headers 
+	router.Use(SecurityHeaderMiddleware())
+	
+	// 3. CORS
 	router.Use(CORS())
+	
+	// 4. Logger
+	router.Use(CustomLogger())
+	
+	// 5. Rate Limiting 
+	router.Use(RateLimitMiddleware())
+	
+	// 6. XSS Protection
+	router.Use(XSSProtectionMiddleware())
 }
+
 
 func GetAuthMiddleware() gin.HandlerFunc {
 	jwtConfig, err := config.GetJWTConfig()
