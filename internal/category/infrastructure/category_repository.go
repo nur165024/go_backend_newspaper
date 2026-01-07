@@ -20,11 +20,11 @@ func NewCategoryRepository(db *sqlx.DB) *categoryRepository {
 // create
 func (r *categoryRepository) Create(category *domain.Category) (*domain.Category, error) {
 	query := `
-	INSERT INTO categories 
-	(name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords) 
-	VALUES 
-	(:name, :slug, :description, :image_url, :sort_order, :is_active, :meta_title, :meta_description, :meta_keywords)
-	RETURNING id, created_at, updated_at
+		INSERT INTO categories 
+		(name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords) 
+		VALUES 
+		(:name, :slug, :description, :image_url, :sort_order, :is_active, :meta_title, :meta_description, :meta_keywords)
+		RETURNING id, created_at, updated_at
 	`
 
 	rows, err := r.db.NamedQuery(query, category)
@@ -96,13 +96,12 @@ func (r *categoryRepository) GetByID(id int) (*domain.Category, error) {
 
 	var category domain.Category
 	err := r.db.Get(&category, query, id)
+ 
 	return &category, err
 }
 
 // get all categories with search, sorting, pagination
 func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
-    fmt.Println("params repo",params)
-
     // Build WHERE clause
     whereClause, args := r.buildWhereClause(params)
     
@@ -127,6 +126,7 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 
     // Execute query
     var categories []*domain.Category
+ 
     err = r.db.Select(&categories, query, args...)
     if err != nil {
         return nil, err
