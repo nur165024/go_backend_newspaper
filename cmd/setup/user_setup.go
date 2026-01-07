@@ -44,5 +44,5 @@ func setupUserRoutes(router *gin.Engine, userHandler *userInterfaces.UserHandler
 		protected.DELETE("/:id", userHandler.DeleteUser)
 	}
 	
-	router.GET("/api/v1/users/email/:email", userHandler.GetUserByEmail)
+	protected.GET("/api/v1/users/email/:email", userHandler.GetUserByEmail)
 }
