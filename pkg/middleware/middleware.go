@@ -26,6 +26,9 @@ func SetupGlobalMiddleWare(router *gin.Engine) {
 	
 	// 6. XSS Protection
 	router.Use(XSSProtectionMiddleware())
+
+	// 7. validation middleware
+	router.Use(ValidationMiddleware())
 }
 
 
