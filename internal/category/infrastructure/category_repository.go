@@ -73,10 +73,14 @@ func (r *categoryRepository) Update(id int, category *domain.Category) (*domain.
 	defer rows.Close()
 
 	if rows.Next() {
+		err = rows.Scan(&category.UpdatedAt)
+		if err != nil {
+				return nil, err
+		}
 		return category, nil
 	}
-
-	return nil, nil
+	
+	return nil, fmt.Errorf("category with id %d not found", id)
 }
 
 // delete
@@ -97,11 +101,33 @@ func (r *categoryRepository) GetByID(id int) (*domain.Category, error) {
 	var category domain.Category
 	err := r.db.Get(&category, query, id)
  
-	return &category, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &category, nil
 }
 
 // get all categories with search, sorting, pagination
 func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
+    // Validate sort parameters
+    validSortFields := map[string]bool{
+        "id": true, "name": true, "slug": true, "created_at": true, "updated_at": true, "sort_order": true,
+    }
+    validOrders := map[string]bool{
+        "ASC": true, "DESC": true,
+    }
+    
+    sortBy := "id" // default
+    if validSortFields[params.SortBy] {
+        sortBy = params.SortBy
+    }
+    
+    order := "DESC" // default
+    if validOrders[params.Order] {
+        order = params.Order
+    }
+
     // Build WHERE clause
     whereClause, args := r.buildWhereClause(params)
     
@@ -110,23 +136,23 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
     var total int64
     err := r.db.Get(&total, countQuery, args...)
     if err != nil {
-      return nil, err
+        return nil, err
     }
 
-    // Build main query with pagination
+    // Build main query with pagination - NOW SAFE
     offset := (params.Page - 1) * params.PageSize
     query := fmt.Sprintf(`
         SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords, created_at, updated_at
         FROM categories %s 
         ORDER BY %s %s 
         LIMIT $%d OFFSET $%d`,
-        whereClause, params.SortBy, params.Order, len(args)+1, len(args)+2)
+        whereClause, sortBy, order, len(args)+1, len(args)+2)
     
     args = append(args, params.PageSize, offset)
 
     // Execute query
     var categories []*domain.Category
- 
+  
     err = r.db.Select(&categories, query, args...)
     if err != nil {
         return nil, err
@@ -143,6 +169,7 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
         TotalPages: totalPages,
     }, nil
 }
+
 
 // Build WHERE clause for search
 func (r *categoryRepository) buildWhereClause(params *domain.QueryParams) (string, []interface{}) {

@@ -44,6 +44,8 @@ func (r *postgresUserRepository) Create(user *domain.User) (*domain.User, error)
 
 // update user
 func (r *postgresUserRepository) Update(id int, user *domain.User) (*domain.User, error) {
+	user.ID = id
+
 	query := `
 		UPDATE users 
 		SET 
@@ -68,10 +70,14 @@ func (r *postgresUserRepository) Update(id int, user *domain.User) (*domain.User
 	defer rows.Close()
 
 	if rows.Next() {
+		err = rows.Scan(&user.UpdatedAt)
+		if err != nil {
+				return nil, err
+		}
 		return user, nil
 	}
 
-	return nil, nil
+	return nil, fmt.Errorf("user with id %d not found", id) 
 }
 
 // delete user
@@ -83,12 +89,15 @@ func (r *postgresUserRepository) Delete(id int) error {
 
 // get by email
 func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error) {
-	query := r.getUserSelectQuery() + " WHERE email = $1"
+    query := r.getUserSelectQuery() + " WHERE email = $1"
 
-	var user domain.User
-	err := r.db.Get(&user, query, email)
-	
-	return &user, err
+    var user domain.User
+    err := r.db.Get(&user, query, email)
+    if err != nil {
+        return nil, err // ✅ Return nil on error
+    }
+    
+    return &user, nil
 }
 
 // get by id
@@ -97,49 +106,71 @@ func (r *postgresUserRepository) GetByID(id int) (*domain.User, error) {
 
 	var user domain.User
 	err := r.db.Get(&user, query, id)
-	return &user, err
+	if err != nil {
+		return nil, err
+	}
+	
+	return &user, nil
 }
 
 // get all users
 func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
-	// Build WHERE clause
-	whereClause, args := r.buildWhereClause(params)
-	
-	// Count total
-	countQuery := "SELECT COUNT(*) FROM users" + whereClause
-	var total int64
-	err := r.db.Get(&total, countQuery, args...)
-	if err != nil {
-		return nil, err
-	}
+    // Validate sort parameters
+    validSortFields := map[string]bool{
+        "id": true, "name": true, "email": true, "created_at": true, "updated_at": true,
+    }
+    validOrders := map[string]bool{
+        "ASC": true, "DESC": true,
+    }
+    
+    sortBy := "id" // default
+    if validSortFields[params.SortBy] {
+        sortBy = params.SortBy
+    }
+    
+    order := "DESC" // default
+    if validOrders[params.Order] {
+        order = params.Order
+    }
 
-	// Build main query
-	offset := (params.Page - 1) * params.PageSize
-	// get all users query
-	query := fmt.Sprintf(`%s %s ORDER BY %s %s LIMIT $%d OFFSET $%d`,
-        r.getUserSelectQuery(), whereClause, params.SortBy, params.Order, len(args)+1, len(args)+2)
+    // Build WHERE clause
+    whereClause, args := r.buildWhereClause(params)
+    
+    // Count total
+    countQuery := "SELECT COUNT(*) FROM users" + whereClause
+    var total int64
+    err := r.db.Get(&total, countQuery, args...)
+    if err != nil {
+        return nil, err
+    }
 
-	
-	args = append(args, params.PageSize, offset)
+    // Build main query - NOW SAFE
+    offset := (params.Page - 1) * params.PageSize
+    query := fmt.Sprintf(`%s %s ORDER BY %s %s LIMIT $%d OFFSET $%d`,
+        r.getUserSelectQuery(), whereClause, sortBy, order, len(args)+1, len(args)+2)
+    
+    args = append(args, params.PageSize, offset)
 
-	// Execute query
-	users := []*domain.User{}
-	err = r.db.Select(&users, query, args...)
-	if err != nil {
-		return nil, err
-	}
+    // Execute query
+    users := []*domain.User{}
+		
+    err = r.db.Select(&users, query, args...)
+    if err != nil {
+        return nil, err
+    }
 
-	// Calculate total pages
-	totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
+    // Calculate total pages
+    totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
 
-	return &domain.QueryResult{
-		Data:       users,
-		TotalItem:  total,
-		Page:       params.Page,
-		PageSize:   params.PageSize,
-		TotalPages: totalPages,
-	}, nil
+    return &domain.QueryResult{
+        Data:       users,
+        TotalItem:  total,
+        Page:       params.Page,
+        PageSize:   params.PageSize,
+        TotalPages: totalPages,
+    }, nil
 }
+
 
 // build where clause
 func (r *postgresUserRepository) buildWhereClause(params *domain.QueryParams) (string, []interface{}) {
