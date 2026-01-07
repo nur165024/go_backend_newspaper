@@ -9,5 +9,5 @@ type UserServices interface {
 	GetUserByID(id int) (*domain.User, error)
 	GetUserByEmail(email string) (*domain.User, error)
 	GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error)
-	LoginUser(email, password string) (*domain.User, error)
+	LoginUser(email, password string) (*domain.LoginResponse, error)
 }

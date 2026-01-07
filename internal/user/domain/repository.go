@@ -26,5 +26,4 @@ type UserRepository interface {
 	GetByID(id int) (*User, error)
 	GetByEmail(email string) (*User, error)
 	GetAll(params *QueryParams) (*QueryResult, error)
-	Login(email, password string) (*User, error)
 }

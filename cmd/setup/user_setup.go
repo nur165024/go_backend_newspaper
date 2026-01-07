@@ -1,31 +1,55 @@
 package setup
 
 import (
+	"gin-quickstart/config"
 	userApplication "gin-quickstart/internal/user/application"
 	userInfrastructure "gin-quickstart/internal/user/infrastructure"
 	userInterfaces "gin-quickstart/internal/user/interfaces"
+	"gin-quickstart/pkg/auth"
+	"gin-quickstart/pkg/middleware"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 )
 
 func SetupUserModule(db *sqlx.DB, router *gin.Engine) {
+	jwtCnf, err := config.GetJWTConfig()
+	if err != nil {
+		log.Fatal("Failed to load JWT config:", err)
+	}
+
 	userRepo := userInfrastructure.NewUserRepository(db)
-	userServices := userApplication.NewUserServices(userRepo)
+	userServices := userApplication.NewUserServices(userRepo, jwtCnf)
 	userHandler := userInterfaces.NewUserHandler(userServices)
 	
 	setupUserRoutes(router, userHandler)
 }
 
 func setupUserRoutes(router *gin.Engine, userHandler *userInterfaces.UserHandler) {
+	// Load JWT config
+	jwtConfig, err := config.GetJWTConfig()
+	if err != nil {
+		log.Fatal("Failed to load JWT config:", err)
+	}
+	jwtService := auth.NewJWTServices(jwtConfig.SecretKey)
+	authMiddleware := middleware.AuthMiddleware(jwtService)
+
+	// AuthMiddleware := middleware.GetAuthMiddleware()
+
 	userGroup := router.Group("/api/v1/users")
+	// public routes
+	userGroup.POST("/", userHandler.CreateUser)
+	userGroup.POST("/login", userHandler.LoginUser)
+	
+	// protected routes
+	protected  := userGroup.Use(authMiddleware)
 	{
-		userGroup.GET("/", userHandler.GetAllUsers)
-		userGroup.POST("/", userHandler.CreateUser)
-		userGroup.POST("/login", userHandler.LoginUser)
-		userGroup.GET("/:id", userHandler.GetUserByID)
-		userGroup.PUT("/:id", userHandler.UpdateUser)
-		userGroup.DELETE("/:id", userHandler.DeleteUser)
+		protected.GET("/", userHandler.GetAllUsers)
+		
+		protected.GET("/:id", userHandler.GetUserByID)
+		protected.PUT("/:id", userHandler.UpdateUser)
+		protected.DELETE("/:id", userHandler.DeleteUser)
 	}
 	
 	router.GET("/api/v1/users/email/:email", userHandler.GetUserByEmail)

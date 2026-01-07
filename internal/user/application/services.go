@@ -3,18 +3,23 @@ package application
 import (
 	"errors"
 	"fmt"
+	"gin-quickstart/config"
 	"gin-quickstart/internal/user/domain"
+	"gin-quickstart/pkg/auth"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userServices struct {
 	userRepo domain.UserRepository
+	jwtCnf   *config.JWTConfig
 }
 
-func NewUserServices(userRepo domain.UserRepository) *userServices {
+func NewUserServices(userRepo domain.UserRepository, jwtCnf *config.JWTConfig) *userServices {
     return &userServices{
         userRepo: userRepo,
+				jwtCnf: jwtCnf,
     }
 }
 
@@ -95,12 +100,12 @@ func (s *userServices) GetUserByID(id int) (*domain.User, error) {
 }
 
 // login user
-func (s *userServices) LoginUser(email, password string) (*domain.User, error) {
+// login user
+func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse, error) {
 	// Get user by email
 	user, err := s.userRepo.GetByEmail(email)
-
 	if err != nil {
-		return nil, errors.New("Invalid email or password!")
+		return nil, errors.New("invalid email or password")
 	}
 
 	// Check if user is active
@@ -114,8 +119,22 @@ func (s *userServices) LoginUser(email, password string) (*domain.User, error) {
 		return nil, errors.New("invalid email or password")
 	}
 
-	return user, nil
+	// Parse duration from string
+	duration, _ := time.ParseDuration(s.jwtCnf.ExpiresIn)
+	expireTime := time.Now().Add(duration)
+
+	// Generate JWT token
+	token, err := auth.NewJWTServices(s.jwtCnf.SecretKey).GenerateToken(user.ID, user.Name, user.Email, user.UserName, expireTime)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.LoginResponse{
+		Token: token,
+		User:  user,
+	}, nil
 }
+
 
 // get all users
 func (s *userServices) GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error) {

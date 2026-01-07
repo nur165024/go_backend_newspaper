@@ -13,6 +13,8 @@ import (
 
 func Server() {
 	router := gin.Default()
+	
+	// Load server config with error handling
 	serverCnf, err := config.GetServerConfig()
 	if err != nil {
 		log.Fatal("Failed to load server config:", err)

@@ -81,15 +81,6 @@ func (r *postgresUserRepository) Delete(id int) error {
 	return err
 }
 
-// login user
-func (r *postgresUserRepository) Login(email, password string) (*domain.User, error) {
-	query := `SELECT * FROM users WHERE email = $1 AND password = $2`
-
-	var user domain.User
-	err := r.db.Get(&user, query, email, password)
-	return &user, err	
-}
-
 // get by email
 func (r *postgresUserRepository) GetByEmail(email string) (*domain.User, error) {
 	query := r.getUserSelectQuery() + " WHERE email = $1"

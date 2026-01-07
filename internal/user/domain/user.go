@@ -37,11 +37,18 @@ type CreateUserRequest struct {
     Password string `json:"password" binding:"required,min=6"`
 }
 
-type LoginUserRequest struct {
+type UpdateUserRequest struct {
+    userRequest
+}
+
+type LoginRequest struct {
     Email    string `json:"email" binding:"required,email"`
     Password string `json:"password" binding:"required"`
 }
 
-type UpdateUserRequest struct {
-    userRequest
+
+// Replace LoginRequest with LoginResponse
+type LoginResponse struct {
+    User  *User  `json:"user"`
+    Token string `json:"token"`
 }

@@ -79,7 +79,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 
 // POST /users/login - Login user
 func (h *UserHandler) LoginUser(c *gin.Context) {
-	var req domain.LoginUserRequest
+	var req domain.LoginRequest
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
