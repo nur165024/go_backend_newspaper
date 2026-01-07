@@ -32,5 +32,5 @@ Create `.env` file with:
 
 ```
 https://dbdiagram.io/d/NEWS-PAPER-68b91b1c61a46d388e5f124a
-`
+
 ```
