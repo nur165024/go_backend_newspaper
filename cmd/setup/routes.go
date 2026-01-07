@@ -9,6 +9,7 @@ import (
 
 func SetupAllModules(db *sqlx.DB, router *gin.Engine) {
 	middleware.SetupGlobalMiddleWare(router)
+
 	SetupUserModule(db, router)
 	SetupCategoryModule(db, router)
 }

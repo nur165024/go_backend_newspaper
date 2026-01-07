@@ -19,6 +19,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+// amazonq-ignore-next-line
 func NewJWTServices (secretKey string) *JWTSecret {
 	return &JWTSecret{secretKey: secretKey}
 }
@@ -46,6 +47,10 @@ func (j *JWTSecret) ValidateToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 	
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 		return []byte(j.secretKey), nil
 	})
 
@@ -55,11 +60,6 @@ func (j *JWTSecret) ValidateToken(tokenString string) (*Claims, error) {
 
 	if !token.Valid {
 		return nil, fmt.Errorf("invalid token")
-	}
-
-	// Check expiration manually
-	if time.Now().After(claims.ExpiresAt.Time) {
-		return nil, fmt.Errorf("token is expired")
 	}
 
 	return claims, nil

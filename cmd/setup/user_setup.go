@@ -5,7 +5,6 @@ import (
 	userApplication "gin-quickstart/internal/user/application"
 	userInfrastructure "gin-quickstart/internal/user/infrastructure"
 	userInterfaces "gin-quickstart/internal/user/interfaces"
-	"gin-quickstart/pkg/auth"
 	"gin-quickstart/pkg/middleware"
 	"log"
 
@@ -28,14 +27,7 @@ func SetupUserModule(db *sqlx.DB, router *gin.Engine) {
 
 func setupUserRoutes(router *gin.Engine, userHandler *userInterfaces.UserHandler) {
 	// Load JWT config
-	jwtConfig, err := config.GetJWTConfig()
-	if err != nil {
-		log.Fatal("Failed to load JWT config:", err)
-	}
-	jwtService := auth.NewJWTServices(jwtConfig.SecretKey)
-	authMiddleware := middleware.AuthMiddleware(jwtService)
-
-	// AuthMiddleware := middleware.GetAuthMiddleware()
+	authMiddleware := middleware.GetAuthMiddleware()
 
 	userGroup := router.Group("/api/v1/users")
 	// public routes

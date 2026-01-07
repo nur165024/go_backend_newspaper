@@ -119,8 +119,16 @@ func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse,
 		return nil, errors.New("invalid email or password")
 	}
 
-	// Parse duration from string
-	duration, _ := time.ParseDuration(s.jwtCnf.ExpiresIn)
+	// Parse duration with proper error handling
+	duration, err := time.ParseDuration(s.jwtCnf.ExpiresIn)
+	if err != nil {
+		return nil, fmt.Errorf("invalid JWT expiration time: %v", err)
+	}
+	
+	if duration <= 0 {
+		return nil, fmt.Errorf("JWT expiration time must be positive")
+	}
+
 	expireTime := time.Now().Add(duration)
 
 	// Generate JWT token

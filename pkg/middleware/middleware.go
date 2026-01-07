@@ -9,8 +9,13 @@ import (
 )
 
 func SetupGlobalMiddleWare(router *gin.Engine) {
+	// rate limit 
+	router.Use(RateLimitMiddleware())
+	// logger
 	router.Use(CustomLogger())
+	// recovery
 	router.Use(gin.Recovery())
+	// cors
 	router.Use(CORS())
 }
 
