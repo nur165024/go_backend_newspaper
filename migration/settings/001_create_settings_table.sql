@@ -1,15 +1,15 @@
 -- migration/settings/001_create_settings_table.sql
-CREATE TABLE IF NOT EXISTS "settings" (
-  "id" SERIAL PRIMARY KEY,
-  "key" VARCHAR(100) UNIQUE NOT NULL,
-  "value" TEXT,
-  "description" TEXT,
-  "data_type" VARCHAR(20) DEFAULT 'string',
-  "category" VARCHAR(50) DEFAULT 'general',
-  "is_public" BOOLEAN DEFAULT false, -- Can be accessed by frontend
-  "is_editable" BOOLEAN DEFAULT true, -- Can be modified via admin panel
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS settings (
+  id SERIAL PRIMARY KEY,
+  key VARCHAR(100) UNIQUE NOT NULL,
+  value TEXT,
+  description TEXT,
+  data_type VARCHAR(20) DEFAULT 'string',
+  category VARCHAR(50) DEFAULT 'general',
+  is_public BOOLEAN DEFAULT false, -- Can be accessed by frontend
+  is_editable BOOLEAN DEFAULT true, -- Can be modified via admin panel
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Check constraints
   CONSTRAINT chk_setting_data_type CHECK (data_type IN ('string', 'integer', 'boolean', 'json', 'url', 'email')),

@@ -1,10 +1,10 @@
 -- migration/role_permissions/001_create_role_permissions_table.sql
-CREATE TABLE IF NOT EXISTS "role_permissions" (
-  "id" SERIAL PRIMARY KEY,
-  "role_id" INT NOT NULL,
-  "permission_id" INT NOT NULL,
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS role_permissions (
+  id SERIAL PRIMARY KEY,
+  role_id INT NOT NULL,
+  permission_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign key constraints
   CONSTRAINT fk_role_permission_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,

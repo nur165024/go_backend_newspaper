@@ -1,12 +1,12 @@
 -- migration/roles/001_create_roles_table.sql
-CREATE TABLE IF NOT EXISTS "roles" (
-  "id" SERIAL PRIMARY KEY,
-  "name" VARCHAR(50) UNIQUE NOT NULL,
-  "description" TEXT,
-  "is_active" BOOLEAN DEFAULT true,
-  "priority" INT DEFAULT 0, -- Role hierarchy (higher = more access)
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS roles (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,
+  priority INT DEFAULT 0, -- Role hierarchy (higher = more access)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Check constraint
   CONSTRAINT chk_role_priority CHECK (priority >= 0 AND priority <= 100)

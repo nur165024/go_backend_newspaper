@@ -1,11 +1,11 @@
 -- migration/news_likes/001_create_news_likes_table.sql
-CREATE TABLE IF NOT EXISTS "news_likes" (
-  "id" SERIAL PRIMARY KEY,
-  "news_id" INT NOT NULL,
-  "user_id" INT NOT NULL,
-  "like_type" VARCHAR(20) NOT NULL,
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS news_likes (
+  id SERIAL PRIMARY KEY,
+  news_id INT NOT NULL,
+  user_id INT NOT NULL,
+  like_type VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign key constraints
   CONSTRAINT fk_like_news FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,

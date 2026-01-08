@@ -1,5 +1,5 @@
 -- migration/news_comments/0001_create_news_comments_table.sql
-CREATE TABLE IF NOT EXISTS "news_comments" (
+CREATE TABLE IF NOT EXISTS news_comments (
   "id" SERIAL PRIMARY KEY,
   "news_id" INT NOT NULL,
   "user_id" INT NOT NULL,

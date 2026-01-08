@@ -1,13 +1,13 @@
 -- migration/news_views/001_create_news_views_table.sql
-CREATE TABLE IF NOT EXISTS "news_views" (
-  "id" SERIAL PRIMARY KEY,
-  "news_id" INT NOT NULL,
-  "user_id" INT, -- Nullable for anonymous users
-  "ip_address" VARCHAR(45), -- IPv6 support (39 chars) + buffer
-  "user_agent" TEXT, -- Browser/device info
-  "viewed_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS news_views (
+  id SERIAL PRIMARY KEY,
+  news_id INT NOT NULL,
+  user_id INT, -- Nullable for anonymous users
+  ip_address VARCHAR(45), -- IPv6 support (39 chars) + buffer
+  user_agent TEXT, -- Browser/device info
+  viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign key constraints
   CONSTRAINT fk_view_news FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,

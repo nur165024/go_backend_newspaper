@@ -1,14 +1,14 @@
 -- migration/task_histories/001_create_task_histories_table.sql
-CREATE TABLE IF NOT EXISTS "task_histories" (
-  "id" SERIAL PRIMARY KEY,
-  "task_id" INT NOT NULL,
-  "user_id" INT NOT NULL,
-  "action" VARCHAR(50) NOT NULL,
-  "old_value" TEXT,
-  "new_value" TEXT,
-  "description" TEXT,
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS task_histories (
+  id SERIAL PRIMARY KEY,
+  task_id INT NOT NULL,
+  user_id INT NOT NULL,
+  action VARCHAR(50) NOT NULL,
+  old_value TEXT,
+  new_value TEXT,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign key constraints
   CONSTRAINT fk_history_task FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,

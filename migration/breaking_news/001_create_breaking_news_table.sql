@@ -1,15 +1,15 @@
 -- migration/breaking_news/001_create_breaking_news_table.sql
-CREATE TABLE IF NOT EXISTS "breaking_news" (
-  "id" SERIAL PRIMARY KEY,
-  "title" VARCHAR(255) NOT NULL,
-  "news_id" INT NOT NULL,
-  "priority" INT DEFAULT 1, -- 1=Low, 2=Medium, 3=High, 4=Critical
-  "alert_sent" BOOLEAN DEFAULT false,
-  "is_active" BOOLEAN DEFAULT true,
-  "expires_at" TIMESTAMP NOT NULL,
-  "created_by" INT NOT NULL,
-  "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS breaking_news (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  news_id INT NOT NULL,
+  priority INT DEFAULT 1, -- 1=Low, 2=Medium, 3=High, 4=Critical
+  alert_sent BOOLEAN DEFAULT false,
+  is_active BOOLEAN DEFAULT true,
+  expires_at TIMESTAMP NOT NULL,
+  created_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   
   -- Foreign key constraints
   CONSTRAINT fk_breaking_news FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
