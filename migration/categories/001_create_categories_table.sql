@@ -1,3 +1,4 @@
+-- migration/categories/001_create_categories_table.sql
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,

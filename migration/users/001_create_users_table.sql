@@ -1,4 +1,4 @@
--- migrations/001_create_users_table.sql
+-- migrations/users/001_create_users_table.sql
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
