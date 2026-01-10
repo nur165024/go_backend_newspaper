@@ -25,7 +25,7 @@ func setupCategoryRoutes(router *gin.Engine, categoryHandler *categoryInterfaces
 	categoryGroup := router.Group("/api/v1/categories")
 	// public routes
 	categoryGroup.GET("/", categoryHandler.GetAllCategories)
-	categoryGroup.GET("/:id", categoryHandler.GetCategoryById)
+	categoryGroup.GET("/:id", categoryHandler.GetCategoryByID)
 
 	protected  := categoryGroup.Use(authMiddleware)
 	{

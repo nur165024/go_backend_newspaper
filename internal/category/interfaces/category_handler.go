@@ -78,7 +78,7 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 }
 
 // GET /categories/:id - get category by id
-func (h *CategoryHandler) GetCategoryById(c *gin.Context) {
+func (h *CategoryHandler) GetCategoryByID(c *gin.Context) {
 	categoryId := c.Param("id")
 	id, _ := strconv.Atoi(categoryId)
 

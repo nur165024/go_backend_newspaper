@@ -110,64 +110,64 @@ func (r *categoryRepository) GetByID(id int) (*domain.Category, error) {
 
 // get all categories with search, sorting, pagination
 func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
-    // Validate sort parameters
-    validSortFields := map[string]bool{
-        "id": true, "name": true, "slug": true, "created_at": true, "updated_at": true, "sort_order": true,
-    }
-    validOrders := map[string]bool{
-        "ASC": true, "DESC": true,
-    }
-    
-    sortBy := "id" // default
-    if validSortFields[params.SortBy] {
-        sortBy = params.SortBy
-    }
-    
-    order := "DESC" // default
-    if validOrders[params.Order] {
-        order = params.Order
-    }
+	// Validate sort parameters
+	validSortFields := map[string]bool{
+		"id": true, "name": true, "slug": true, "created_at": true, "updated_at": true, "sort_order": true,
+	}
+	validOrders := map[string]bool{
+		"ASC": true, "DESC": true,
+	}
+	
+	sortBy := "id" // default
+	if validSortFields[params.SortBy] {
+		sortBy = params.SortBy
+	}
+	
+	order := "DESC" // default
+	if validOrders[params.Order] {
+		order = params.Order
+	}
 
-    // Build WHERE clause
-    whereClause, args := r.buildWhereClause(params)
-    
-    // Count total records
-    countQuery := "SELECT COUNT(*) FROM categories" + whereClause
-    var total int64
-    err := r.db.Get(&total, countQuery, args...)
-    if err != nil {
-        return nil, err
-    }
+	// Build WHERE clause
+	whereClause, args := r.buildWhereClause(params)
+	
+	// Count total records
+	countQuery := "SELECT COUNT(*) FROM categories" + whereClause
+	var total int64
+	err := r.db.Get(&total, countQuery, args...)
+	if err != nil {
+			return nil, err
+	}
 
-    // Build main query with pagination - NOW SAFE
-    offset := (params.Page - 1) * params.PageSize
-    query := fmt.Sprintf(`
-        SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords, created_at, updated_at
-        FROM categories %s 
-        ORDER BY %s %s 
-        LIMIT $%d OFFSET $%d`,
-        whereClause, sortBy, order, len(args)+1, len(args)+2)
-    
-    args = append(args, params.PageSize, offset)
+	// Build main query with pagination - NOW SAFE
+	offset := (params.Page - 1) * params.PageSize
+	query := fmt.Sprintf(`
+			SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords, created_at, updated_at
+			FROM categories %s 
+			ORDER BY %s %s 
+			LIMIT $%d OFFSET $%d`,
+			whereClause, sortBy, order, len(args)+1, len(args)+2)
+	
+	args = append(args, params.PageSize, offset)
 
-    // Execute query
-    var categories []*domain.Category
-  
-    err = r.db.Select(&categories, query, args...)
-    if err != nil {
-        return nil, err
-    }
+	// Execute query
+	var categories []*domain.Category
 
-    // Calculate total pages
-    totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
+	err = r.db.Select(&categories, query, args...)
+	if err != nil {
+			return nil, err
+	}
 
-    return &domain.QueryResult{
-        Data:       categories,
-        TotalItem:  total,
-        Page:       params.Page,
-        PageSize:   params.PageSize,
-        TotalPages: totalPages,
-    }, nil
+	// Calculate total pages
+	totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
+
+	return &domain.QueryResult{
+		Data:       categories,
+		TotalItem:  total,
+		Page:       params.Page,
+		PageSize:   params.PageSize,
+		TotalPages: totalPages,
+	}, nil
 }
 
 
