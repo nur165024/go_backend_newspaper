@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS settings (
   CONSTRAINT chk_setting_category CHECK (category IN ('general', 'email', 'social', 'seo', 'security', 'payment', 'notification'))
 );
 
-CREATE INDEX idx_settings_category ON settings(category);
-CREATE INDEX idx_settings_key ON settings(key);
+CREATE INDEX IF NOT EXISTS idx_settings_category ON settings(category);
+CREATE INDEX IF NOT EXISTS idx_settings_key ON settings(key);
 
 -- Insert default settings
 INSERT INTO settings (key, value, description, data_type, category, is_public) VALUES 
@@ -26,5 +26,5 @@ INSERT INTO settings (key, value, description, data_type, category, is_public) V
 ('admin_email', 'admin@example.com', 'Administrator email', 'email', 'general', false),
 ('posts_per_page', '10', 'Number of posts per page', 'integer', 'general', true),
 ('enable_comments', 'true', 'Enable comments on news', 'boolean', 'general', true),
-('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', 'general', false),
-ON CONFLICT (name) DO NOTHING;
+('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', 'general', false)
+ON CONFLICT (key) DO NOTHING;

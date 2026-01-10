@@ -31,6 +31,9 @@ func Migrate() {
 	db := database.NewDatabaseConnection(dbConnection)
 	defer db.Close()
 	
+	// Create migrations table
+	createMigrationsTable(db)
+	
 	// migration direction
 	migrationDirs := []string{
         "migration/users",
@@ -70,7 +73,7 @@ func Migrate() {
         }
         
         for _, file := range files {
-					migrationName := strings.Replace(filepath.Base(file), ".sql", "", 1)
+			migrationName := strings.Replace(filepath.Base(file), ".sql", "", 1)
             
             // Check if migration already executed
             if isMigrationExecuted(db, migrationName) {
@@ -88,10 +91,12 @@ func Migrate() {
             
             _, err = db.Exec(string(content))
             if err != nil {
-                log.Printf("Error executing migration %s: %v", file, err)
+                log.Printf("❌ Error executing migration %s: %v", file, err)
                 continue
             }
             
+            // Mark as executed only on success
+            markMigrationExecuted(db, migrationName)
             fmt.Printf("✅ Successfully executed: %s\n", file)
         }
     }
@@ -113,11 +118,14 @@ func createMigrationsTable(db *sqlx.DB) {
 func isMigrationExecuted(db *sqlx.DB, migrationName string) bool {
     var count int
     query := "SELECT COUNT(*) FROM migrations WHERE migration_name = $1"
-    db.Get(&count, query, migrationName)
+    err := db.Get(&count, query, migrationName)
+    if err != nil {
+        return false
+    }
     return count > 0
 }
 
 func markMigrationExecuted(db *sqlx.DB, migrationName string) {
-    query := "INSERT INTO migrations (migration_name) VALUES ($1)"
+    query := "INSERT INTO migrations (migration_name) VALUES ($1) ON CONFLICT (migration_name) DO NOTHING"
     db.Exec(query, migrationName)
 }
