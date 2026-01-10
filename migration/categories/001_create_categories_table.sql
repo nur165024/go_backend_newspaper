@@ -5,7 +5,10 @@ CREATE TABLE IF NOT EXISTS categories (
     slug VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
-    parent_id INT REFERENCES categories(id),
+    sort_order INTEGER DEFAULT 0,
+    image_url VARCHAR(255),
+    meta_title VARCHAR(255),
+    meta_description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
