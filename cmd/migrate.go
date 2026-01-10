@@ -33,10 +33,18 @@ func Migrate() {
 	
 	// migration direction
 	migrationDirs := []string{
-        "migration/advertisements",
-        "migration/breaking_news",
+        "migration/users",
+        "migration/roles",
 		"migration/categories",
         "migration/news",
+        "migration/polls",
+        "migration/poll_options",
+        "migration/votes",
+        "migration/tags_news",
+        "migration/tasks",
+        "migration/task_comments",
+        "migration/advertisements",
+        "migration/breaking_news",
         "migration/news_comments",
         "migration/news_likes",
         "migration/news_views",
@@ -44,20 +52,12 @@ func Migrate() {
         "migration/newsletters",
         "migration/notifications",
         "migration/permissions",
-        "migration/poll_options",
-        "migration/polls",
         "migration/role_permissions",
-        "migration/roles",
         "migration/seo_metadata",
         "migration/settings",
         "migration/tags",
-        "migration/tags_news",
-        "migration/task_comments",
         "migration/task_histories",
-        "migration/tasks",
         "migration/trending_news",
-		"migration/users",
-        "migration/votes",
 	}
 
 	for _, dir := range migrationDirs {

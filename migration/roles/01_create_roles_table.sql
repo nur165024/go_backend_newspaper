@@ -18,4 +18,5 @@ INSERT INTO roles (name, description, priority) VALUES
 ('admin', 'Administrator with management access', 80),
 ('editor', 'Content Editor with publishing rights', 60),
 ('author', 'Content Author with limited publishing', 40),
-('user', 'Regular User with basic access', 20);
+('user', 'Regular User with basic access', 20),
+ON CONFLICT (name) DO NOTHING;

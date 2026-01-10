@@ -26,4 +26,5 @@ INSERT INTO settings (key, value, description, data_type, category, is_public) V
 ('admin_email', 'admin@example.com', 'Administrator email', 'email', 'general', false),
 ('posts_per_page', '10', 'Number of posts per page', 'integer', 'general', true),
 ('enable_comments', 'true', 'Enable comments on news', 'boolean', 'general', true),
-('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', 'general', false);
+('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', 'general', false),
+ON CONFLICT (name) DO NOTHING;
