@@ -3,19 +3,27 @@ package config
 import (
 	"fmt"
 	"gin-quickstart/utils"
+	"strconv"
 )
 
 type JWTConfig struct {
 	SecretKey string
-	ExpiresIn string
+	AccessTokenExpireMinutes int
+	RefreshTokenExpireDays int
 }
 
 // load jwt config
 func LoadJWTConfig(envLoader func(string) string) (*JWTConfig, error) {
+	accessMinutes, _ := strconv.Atoi(utils.GetValueOrDefault(envLoader("JWT_ACCESS_TOKEN_EXPIRE_MINUTES"), "15"))
+	refreshDays, _ := strconv.Atoi(utils.GetValueOrDefault(envLoader("JWT_REFRESH_TOKEN_EXPIRE_DAYS"), "7"))
+
+
 	config := &JWTConfig{
-		SecretKey: envLoader("JWT_SECRET_KEY"),
-		ExpiresIn: utils.GetValueOrDefault(envLoader("JWT_EXPIRES_IN"), "24h"),
+		SecretKey:                envLoader("JWT_SECRET"),
+		AccessTokenExpireMinutes: accessMinutes,
+		RefreshTokenExpireDays:   refreshDays,
 	}
+
 	err := validateJWTConfig(config)
 	if err != nil {
 		return nil, err

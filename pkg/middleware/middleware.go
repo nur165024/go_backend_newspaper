@@ -42,6 +42,6 @@ func GetAuthMiddleware() gin.HandlerFunc {
 		log.Fatal("Failed to load JWT config: ", err)
 	}
 
-	jwtSecret := auth.NewJWTServices(jwtConfig.SecretKey)
+	jwtSecret := auth.NewJWTServices(jwtConfig.SecretKey, jwtConfig.AccessTokenExpireMinutes, jwtConfig.RefreshTokenExpireDays)
 	return AuthMiddleware(jwtSecret)
 }

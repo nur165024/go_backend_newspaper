@@ -31,13 +31,13 @@ func setupUserRoutes(router *gin.Engine, userHandler *userInterfaces.UserHandler
 
 	userGroup := router.Group("/api/v1/users")
 	// public routes
-	userGroup.POST("/", userHandler.CreateUser)
+	userGroup.POST("", userHandler.CreateUser)
 	userGroup.POST("/login", userHandler.LoginUser)
 	
 	// protected routes
 	protected  := userGroup.Use(authMiddleware)
 	{
-		protected.GET("/", userHandler.GetAllUsers)
+		protected.GET("", userHandler.GetAllUsers)
 		
 		protected.GET("/:id", userHandler.GetUserByID)
 		protected.PUT("/:id", userHandler.UpdateUser)

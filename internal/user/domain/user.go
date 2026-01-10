@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"gin-quickstart/pkg/auth"
+	"time"
+)
 
 type User struct {
     ID                   int        `db:"id" json:"id"`
@@ -50,5 +53,5 @@ type LoginRequest struct {
 // Replace LoginRequest with LoginResponse
 type LoginResponse struct {
     User  *User  `json:"user"`
-    Token string `json:"token"`
+    Token *auth.TokenPair `json:"token"`
 }

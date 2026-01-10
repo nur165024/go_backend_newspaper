@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"fmt"
 	"gin-quickstart/internal/user/application"
 	"gin-quickstart/internal/user/domain"
 	"net/http"
@@ -21,15 +22,16 @@ func NewUserHandler(userServices application.UserServices) *UserHandler {
 
 // POST /users - Create user
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var req *domain.CreateUserRequest
+	var req domain.CreateUserRequest
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Printf("Request: %+v\n", req)
 
-	user, err := h.userServices.CreateUser(req)
+	user, err := h.userServices.CreateUser(&req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -44,7 +46,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	userId := c.Param("id")
 	id, _ := strconv.Atoi(userId)
 
-	var req *domain.UpdateUserRequest
+	var req domain.UpdateUserRequest
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -52,7 +54,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userServices.UpdateUser(id, req)
+	user, err := h.userServices.UpdateUser(id, &req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -6,7 +6,6 @@ import (
 	"gin-quickstart/config"
 	"gin-quickstart/internal/user/domain"
 	"gin-quickstart/pkg/auth"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -119,20 +118,8 @@ func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse,
 		return nil, errors.New("invalid email or password")
 	}
 
-	// Parse duration with proper error handling
-	duration, err := time.ParseDuration(s.jwtCnf.ExpiresIn)
-	if err != nil {
-		return nil, fmt.Errorf("invalid JWT expiration time: %v", err)
-	}
-	
-	if duration <= 0 {
-		return nil, fmt.Errorf("JWT expiration time must be positive")
-	}
-
-	expireTime := time.Now().Add(duration)
-
 	// Generate JWT token
-	token, err := auth.NewJWTServices(s.jwtCnf.SecretKey).GenerateToken(user.ID, user.Name, user.Email, user.UserName, expireTime)
+	token, err := auth.NewJWTServices(s.jwtCnf.SecretKey, s.jwtCnf.AccessTokenExpireMinutes, s.jwtCnf.RefreshTokenExpireDays).GenerateTokenPair(user.ID, user.Name, user.Email, user.UserName)
 	if err != nil {
 		return nil, err
 	}
