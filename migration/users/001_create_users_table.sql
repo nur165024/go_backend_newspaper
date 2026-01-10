@@ -17,3 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_users_created_at ON users(created_at);
+CREATE INDEX idx_task_comments_created_at ON task_comments(created_at);
+CREATE INDEX idx_task_histories_created_at ON task_histories(created_at);

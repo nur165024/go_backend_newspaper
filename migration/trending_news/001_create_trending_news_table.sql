@@ -26,3 +26,5 @@ CREATE TABLE IF NOT EXISTS trending_news (
 
 -- Indexes for performance
 CREATE INDEX idx_trending_news_id ON trending_news(news_id);
+CREATE INDEX idx_trending_date_rank ON trending_news(date, rank);
+CREATE INDEX idx_trending_score ON trending_news(score DESC);

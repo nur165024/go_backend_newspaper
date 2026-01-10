@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS newsletters (
   total_sent INT DEFAULT 0,
   total_opened INT DEFAULT 0,
   total_clicked INT DEFAULT 0,
-  open_rate DECIMAL(5,2) DEFAULT 0.00,
-  click_rate DECIMAL(5,2) DEFAULT 0.00,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   

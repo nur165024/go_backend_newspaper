@@ -48,6 +48,7 @@ func Migrate() {
         "migration/polls",
         "migration/role_permissions",
         "migration/roles",
+        "migration/seo_metadata",
         "migration/settings",
         "migration/tags",
         "migration/tags_news",

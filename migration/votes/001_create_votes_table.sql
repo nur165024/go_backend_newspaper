@@ -15,3 +15,7 @@ CREATE TABLE IF NOT EXISTS votes (
   CONSTRAINT fk_vote_option FOREIGN KEY (option_id) REFERENCES poll_options(id) ON DELETE CASCADE,
   CONSTRAINT fk_vote_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_votes_poll_id ON votes(poll_id);
+CREATE INDEX idx_votes_user_id ON votes(user_id);
+CREATE INDEX idx_votes_ip_address ON votes(ip_address);

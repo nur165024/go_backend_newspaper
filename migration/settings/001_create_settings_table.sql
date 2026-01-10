@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS settings (
   CONSTRAINT chk_setting_category CHECK (category IN ('general', 'email', 'social', 'seo', 'security', 'payment', 'notification'))
 );
 
+CREATE INDEX idx_settings_category ON settings(category);
+CREATE INDEX idx_settings_key ON settings(key);
+
 -- Insert default settings
 INSERT INTO settings (key, value, description, data_type, category, is_public) VALUES 
 ('site_name', 'News Portal', 'Website name', 'string', 'general', true),

@@ -9,3 +9,6 @@ CREATE TABLE IF NOT EXISTS tags (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_tags_slug ON tags(slug);
+CREATE INDEX idx_tags_is_active ON tags(is_active);
