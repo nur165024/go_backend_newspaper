@@ -51,6 +51,7 @@ func Migrate() {
         "migration/news_comments",
         "migration/news_likes",
         "migration/news_views",
+        "migration/refresh_tokens",
         "migration/newsletter_subscriptions",
         "migration/newsletters",
         "migration/notifications",

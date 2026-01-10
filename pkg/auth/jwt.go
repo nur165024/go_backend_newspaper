@@ -42,26 +42,26 @@ func NewJWTServices(secretKey string, accessMinutes, refreshDays int) *JWTSecret
 
 // Generate token pair with env-based expiration
 func (j *JWTSecret) GenerateTokenPair(id int, name, email, userName string) (*TokenPair, error) {
-	// Access token from env
-	accessToken, err := j.generateToken(id, name, email, userName, "access", 
-		time.Now().Add(time.Duration(j.accessTokenExpireMinutes)*time.Minute))
-	if err != nil {
-		return nil, err
-	}
+    // Only generate JWT tokens
+    accessToken, err := j.generateToken(id, name, email, userName, "access", 
+        time.Now().Add(time.Duration(j.accessTokenExpireMinutes)*time.Minute))
+    if err != nil {
+        return nil, err
+    }
 
-	// Refresh token from env
-	refreshToken, err := j.generateToken(id, name, email, userName, "refresh", 
-		time.Now().Add(time.Duration(j.refreshTokenExpireDays)*24*time.Hour))
-	if err != nil {
-		return nil, err
-	}
+    refreshToken, err := j.generateToken(id, name, email, userName, "refresh", 
+        time.Now().Add(time.Duration(j.refreshTokenExpireDays)*24*time.Hour))
+    if err != nil {
+        return nil, err
+    }
 
-	return &TokenPair{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiresIn:    int64(j.accessTokenExpireMinutes * 60), // seconds
-	}, nil
+    return &TokenPair{
+        AccessToken:  accessToken,
+        RefreshToken: refreshToken,
+        ExpiresIn:    int64(j.accessTokenExpireMinutes * 60),
+    }, nil
 }
+
 
 func (j *JWTSecret) generateToken(id int, name, email, userName, tokenType string, expireTime time.Time) (string, error) {
 	claims := &Claims{

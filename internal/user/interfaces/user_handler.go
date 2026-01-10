@@ -26,18 +26,21 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
+		fmt.Println("Bind error:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Printf("Request: %+v\n", req)
+	
+	fmt.Printf("Request parsed successfully: %+v\n", req)
 
 	user, err := h.userServices.CreateUser(&req)
-
 	if err != nil {
+		fmt.Println("Service error:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	fmt.Println("User created successfully")
 	c.JSON(http.StatusCreated, gin.H{"data": user})
 }
 
@@ -154,5 +157,3 @@ func (h *UserHandler) GetUserByEmail(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": user})
 }
-
-

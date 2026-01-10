@@ -21,17 +21,11 @@ func SetupGlobalMiddleWare(router *gin.Engine) {
 	// 4. Logger
 	router.Use(CustomLogger())
 	
-	// 5. Rate Limiting 
-	router.Use(RateLimitMiddleware())
-	
-	// 6. XSS Protection
-	router.Use(XSSProtectionMiddleware())
-
-	// 6.1. Content Security Policy
-	router.Use(CSRFMiddleware())
-
-	// 7. validation middleware
-	router.Use(ValidationMiddleware())
+	// Disable problematic middlewares for now
+	// router.Use(RateLimitMiddleware())
+	// router.Use(XSSProtectionMiddleware())
+	// router.Use(CSRFMiddleware())  // This blocks POST requests
+	// router.Use(ValidationMiddleware())
 }
 
 

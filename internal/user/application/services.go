@@ -1,23 +1,29 @@
 package application
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"gin-quickstart/config"
+	authDomain "gin-quickstart/internal/auth/domain"
 	"gin-quickstart/internal/user/domain"
 	"gin-quickstart/pkg/auth"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userServices struct {
 	userRepo domain.UserRepository
+	refreshTokenRepo authDomain.RefreshTokenRepository
 	jwtCnf   *config.JWTConfig
 }
 
-func NewUserServices(userRepo domain.UserRepository, jwtCnf *config.JWTConfig) *userServices {
+func NewUserServices(userRepo domain.UserRepository, refreshTokenRepo authDomain.RefreshTokenRepository, jwtCnf *config.JWTConfig) *userServices {
     return &userServices{
         userRepo: userRepo,
+				refreshTokenRepo: refreshTokenRepo,
 				jwtCnf: jwtCnf,
     }
 }
@@ -118,14 +124,28 @@ func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse,
 		return nil, errors.New("invalid email or password")
 	}
 
-	// Generate JWT token
-	token, err := auth.NewJWTServices(s.jwtCnf.SecretKey, s.jwtCnf.AccessTokenExpireMinutes, s.jwtCnf.RefreshTokenExpireDays).GenerateTokenPair(user.ID, user.Name, user.Email, user.UserName)
+	// Generate JWT token pair
+	jwtService := auth.NewJWTServices(s.jwtCnf.SecretKey, s.jwtCnf.AccessTokenExpireMinutes, s.jwtCnf.RefreshTokenExpireDays)
+	tokenPair, err := jwtService.GenerateTokenPair(user.ID, user.Name, user.Email, user.UserName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store refresh token in database
+	tokenHash := sha256.Sum256([]byte(tokenPair.RefreshToken))
+	refreshToken := &authDomain.RefreshToken{
+		UserID:    user.ID,
+		TokenHash: hex.EncodeToString(tokenHash[:]),
+		ExpiresAt: time.Now().Add(time.Duration(s.jwtCnf.RefreshTokenExpireDays) * 24 * time.Hour),
+	}
+	
+	err = s.refreshTokenRepo.Create(refreshToken)
 	if err != nil {
 		return nil, err
 	}
 
 	return &domain.LoginResponse{
-		Token: token,
+		Token: tokenPair,
 		User:  user,
 	}, nil
 }
