@@ -22,7 +22,7 @@ type QueryResult struct {
 type CategoryRepository interface {
 	GetAll(params *QueryParams) (*QueryResult, error)
 	GetByID(id int) (*Category, error)
-	Create(category *Category) (*Category, error)
-	Update(id int, category *Category) (*Category, error)
+	Create(category *CreateCategoryRequest) (*Category, error)
+	Update(id int, category *UpdateCategoryRequest) (*Category, error)
 	Delete(id int) error
 }

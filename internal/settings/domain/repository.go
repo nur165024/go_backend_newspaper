@@ -19,7 +19,7 @@ type QueryResult struct {
 type SettingsRepository interface {
 	GetAll(params *QueryParams) (*QueryResult, error)
 	GetByID(id int) (*Settings, error)
-	Create(category *Settings) (*Settings, error)
-	Update(id int, category *Settings) (*Settings, error)
+	Create(settings *CreateSettingsRequest) (*Settings, error)
+	Update(id int, settings *UpdateSettingsRequest) (*Settings, error)
 	Delete(id int) error
 }

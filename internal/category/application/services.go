@@ -15,21 +15,32 @@ func NewCategoryServices(categoryRepo domain.CategoryRepository) *categoryServic
 	}
 }
 
-// create
-func (s *categoryServices) CreateCategory(req *domain.CreateCategoryRequest) (*domain.Category, error){
-	category := &domain.Category{
-		Name: req.Name,
-		Slug: req.Slug,
-		Description: req.Description,
-		ImageUrl: req.ImageUrl,
-		SortOrder: req.SortOrder,
-		IsActive: req.IsActive,
-		MetaTitle: req.MetaTitle,
-		MetaDescription: req.MetaDescription,
-		MetaKeywords: req.MetaKeywords,
+// get all
+func (s *categoryServices) GetAllCategories(params *domain.QueryParams) (*domain.QueryResult, error) {
+	categories, err := s.categoryRepo.GetAll(params)
+
+	if err != nil {
+		return nil, err
 	}
 
-	createdCategory, err := s.categoryRepo.Create(category)
+	return categories, nil
+}
+
+// get by id
+func (s *categoryServices) GetCategoryByID(id int) (*domain.Category, error) {
+	category, err := s.categoryRepo.GetByID(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return category, nil
+}
+
+// create
+func (s *categoryServices) CreateCategory(req *domain.CreateCategoryRequest) (*domain.Category, error){
+	
+	createdCategory, err := s.categoryRepo.Create(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create category: %w", err)
 	}
@@ -69,30 +80,8 @@ func (s *categoryServices) DeleteCategory(id int) error {
 	return nil
 }
 
-// get by id
-func (s *categoryServices) GetCategoryByID(id int) (*domain.Category, error) {
-	category, err := s.categoryRepo.GetByID(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return category, nil
-}
-
-// get all
-func (s *categoryServices) GetAllCategories(params *domain.QueryParams) (*domain.QueryResult, error) {
-	categories, err := s.categoryRepo.GetAll(params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return categories, nil
-}
-
 // helper function 
-func updateCategoryFields(category *domain.Category, req *domain.UpdateCategoryRequest) *domain.Category {
+func updateCategoryFields(category *domain.Category, req *domain.UpdateCategoryRequest) *domain.UpdateCategoryRequest {
 	if req.Name != "" {
 		category.Name = req.Name
 	}
@@ -121,5 +110,5 @@ func updateCategoryFields(category *domain.Category, req *domain.UpdateCategoryR
 		category.MetaKeywords = req.MetaKeywords
 	}
 
-	return category
+	return req
 }

@@ -5,6 +5,7 @@ import (
 	"gin-quickstart/internal/user/domain"
 	"math"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -18,7 +19,7 @@ func NewUserRepository(db *sqlx.DB) *postgresUserRepository {
 }
 
 // create user
-func (r *postgresUserRepository) Create(user *domain.User) (*domain.User, error) {
+func (r *postgresUserRepository) Create(user *domain.CreateUserRequest) (*domain.User, error) {
 	query := `
 	INSERT INTO users (name, user_name, email, password, designation, bio, profile_picture, is_active, is_verified)
 	VALUES (:name, :user_name, :email, :password, :designation, :bio, :profile_picture, :is_active, :is_verified)
@@ -32,18 +33,37 @@ func (r *postgresUserRepository) Create(user *domain.User) (*domain.User, error)
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
+		var id int
+		var createdAt, updatedAt time.Time
+		err = rows.Scan(&id, &createdAt, &updatedAt)
 		if err != nil {
-				return nil, fmt.Errorf("failed to scan returned values: %w", err)
+			return nil, fmt.Errorf("failed to scan returned values: %w", err)
 		}
-		return user, nil
+		
+		// Create User struct with all fields
+		result := &domain.User{
+			ID:             id,
+			Name:           user.Name,
+			UserName:       user.UserName,
+			Email:          user.Email,
+			Password:       user.Password,
+			Designation:    user.Designation,
+			Bio:            user.Bio,
+			ProfilePicture: user.ProfilePicture,
+			IsActive:       user.IsActive,
+			IsVerified:     user.IsVerified,
+			CreatedAt:      createdAt,
+			UpdatedAt:      updatedAt,
+		}
+		return result, nil
 	}
+
 
 	return nil, fmt.Errorf("no rows returned after insert")
 }
 
 // update user
-func (r *postgresUserRepository) Update(id int, user *domain.User) (*domain.User, error) {
+func (r *postgresUserRepository) Update(id int, user *domain.UpdateUserRequest) (*domain.User, error) {
 	user.ID = id
 
 	query := `
@@ -70,11 +90,26 @@ func (r *postgresUserRepository) Update(id int, user *domain.User) (*domain.User
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&user.UpdatedAt)
+		var UpdatedAt time.Time
+		err = rows.Scan(&UpdatedAt)
 		if err != nil {
 				return nil, err
 		}
-		return user, nil
+
+		result := &domain.User{
+			ID:             id,
+			Name:           user.Name,
+			UserName:       user.UserName,
+			Email:          user.Email,
+			Designation:    user.Designation,
+			Bio:            user.Bio,
+			ProfilePicture: user.ProfilePicture,
+			IsActive:       user.IsActive,
+			IsVerified:     user.IsVerified,
+			UpdatedAt:      UpdatedAt,
+		}	
+
+		return result, nil
 	}
 
 	return nil, fmt.Errorf("user with id %d not found", id) 

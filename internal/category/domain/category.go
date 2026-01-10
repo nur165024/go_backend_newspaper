@@ -38,4 +38,5 @@ type CreateCategoryRequest struct {
 // Update with validation
 type UpdateCategoryRequest struct {
 	categoryRequest
+	ID int `json:"id"`
 }

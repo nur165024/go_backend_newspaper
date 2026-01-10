@@ -1,6 +1,9 @@
 package application
 
-import "gin-quickstart/internal/settings/domain"
+import (
+	"fmt"
+	"gin-quickstart/internal/settings/domain"
+)
 
 type settingsServices struct {
 	settingsRepo domain.SettingsRepository
@@ -36,20 +39,10 @@ func (s *settingsServices) GetSettingsByID(id int) (*domain.Settings, error) {
 
 // create
 func (s *settingsServices) CreateSettings(req *domain.CreateSettingsRequest) (*domain.Settings, error) {
-	settings := &domain.Settings{
-		Key: req.Key,
-		Value: req.Value,
-		Description: req.Description,
-		DataType: req.DataType,
-		Category: req.Category,
-		IsPublic: req.IsPublic,
-		IsEditable: req.IsEditable,
-	}
-
-	createSettings, err := s.settingsRepo.Create(settings)
+	createSettings, err := s.settingsRepo.Create(req)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create Settings: %w", err)
 	}
 
 	return createSettings, nil
@@ -88,7 +81,7 @@ func (s *settingsServices) DeleteSettings(id int) error {
 }
 
 // helper function 
-func updateCategoryFields(settings *domain.Settings, req *domain.UpdateSettingsRequest) *domain.Settings {
+func updateCategoryFields(settings *domain.Settings , req *domain.UpdateSettingsRequest) *domain.UpdateSettingsRequest   {
 	if req.Key != "" {
 		settings.Key = req.Key
 	}
@@ -111,5 +104,5 @@ func updateCategoryFields(settings *domain.Settings, req *domain.UpdateSettingsR
 		settings.IsEditable = req.IsEditable
 	}
 
-	return settings
+	return req
 }

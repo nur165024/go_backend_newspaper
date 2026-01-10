@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// User struct
 type User struct {
     ID                   int        `db:"id" json:"id"`
     Name                 string     `db:"name" json:"name"`
@@ -24,6 +25,7 @@ type User struct {
     UpdatedAt            time.Time  `db:"updated_at" json:"updated_at"`
 }
 
+// user request
 type userRequest struct {
     Name     string `json:"name" binding:"required"`
     UserName string `json:"user_name"`
@@ -35,20 +37,23 @@ type userRequest struct {
     IsVerified bool `json:"is_verified"`
 }
 
+// create user request
 type CreateUserRequest struct {
     userRequest
     Password string `json:"password" binding:"required,min=6"`
 }
 
+// update user request
 type UpdateUserRequest struct {
     userRequest
+    ID int `json:"id"`
 }
 
+// login request
 type LoginRequest struct {
     Email    string `json:"email" binding:"required,email"`
     Password string `json:"password" binding:"required"`
 }
-
 
 // Replace LoginRequest with LoginResponse
 type LoginResponse struct {

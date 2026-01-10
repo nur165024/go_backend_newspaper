@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Settings struct {
 	ID          int    `db:"id" json:"id"`
 	Key         string `db:"key" json:"key"`
@@ -9,8 +11,8 @@ type Settings struct {
 	Category    string `db:"category" json:"category"`
 	IsPublic    bool   `db:"is_public" json:"is_public"`
 	IsEditable  bool   `db:"is_editable" json:"is_editable"`
-	CreatedAt   string `db:"created_at" json:"created_at"`
-	UpdatedAt   string `db:"updated_at" json:"updated_at"`
+	CreatedAt   time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type settingsRequest struct {
@@ -31,4 +33,5 @@ type CreateSettingsRequest struct {
 // Update with validation
 type UpdateSettingsRequest struct {
 	settingsRequest
+	ID int `json:"id"`
 }

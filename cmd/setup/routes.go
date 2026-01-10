@@ -12,4 +12,5 @@ func SetupAllModules(db *sqlx.DB, router *gin.Engine) {
 
 	SetupUserModule(db, router)
 	SetupCategoryModule(db, router)
+	SetupSettingsModule(db, router)
 }

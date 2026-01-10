@@ -28,69 +28,15 @@ func NewUserServices(userRepo domain.UserRepository, refreshTokenRepo authDomain
     }
 }
 
-// create user
-func (s *userServices) CreateUser(req *domain.CreateUserRequest) (*domain.User, error) {
-	// Check if user already exists
-	existingUser, err := s.userRepo.GetByEmail(req.Email)
-	if err == nil && existingUser != nil {
-		return nil, errors.New("this email already exists!")
-	}
-
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-
-	user := &domain.User{
-		Name:           req.Name,
-		UserName:       req.UserName,
-		Email:          req.Email,
-		Password:       string(hashedPassword),
-		Designation:    req.Designation,
-		Bio:            req.Bio,
-		ProfilePicture: req.ProfilePicture,
-		IsActive:       true,  // Set default
-		IsVerified:     false, // Set default
-	}
-
-	// Create user
-	createdUser, err := s.userRepo.Create(user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
-	}
-
-	return createdUser, nil
-}
-
-// update user
-func (s *userServices) UpdateUser(id int, req *domain.UpdateUserRequest) (*domain.User, error) {
-	// Get existing user
-	user, err := s.userRepo.GetByID(id)
-	if err != nil {
-		return nil, err
-	}
+// get all users
+func (s *userServices) GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error) {
+	users, err := s.userRepo.GetAll(params)
 	
-	updateInfo := updateUserFields(user, req)
-
-	// Update in database
-	updatedUser, err := s.userRepo.Update(id, updateInfo)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedUser, nil
-}
-
-// delete user
-func (s *userServices) DeleteUser(id int) error {
-	err := s.userRepo.Delete(id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return users, nil
 }
 
 // get user by id
@@ -104,7 +50,6 @@ func (s *userServices) GetUserByID(id int) (*domain.User, error) {
 	return user, nil
 }
 
-// login user
 // login user
 func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse, error) {
 	// Get user by email
@@ -150,18 +95,6 @@ func (s *userServices) LoginUser(email, password string) (*domain.LoginResponse,
 	}, nil
 }
 
-
-// get all users
-func (s *userServices) GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error) {
-	users, err := s.userRepo.GetAll(params)
-	
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
-}
-
 // get user by email
 func (s *userServices) GetUserByEmail(email string) (*domain.User, error) {
 	user, err := s.userRepo.GetByEmail(email)
@@ -173,8 +106,63 @@ func (s *userServices) GetUserByEmail(email string) (*domain.User, error) {
 	return user, nil
 }
 
+// create user
+func (s *userServices) CreateUser(req *domain.CreateUserRequest) (*domain.User, error) {
+	// Check if user already exists
+	existingUser, err := s.userRepo.GetByEmail(req.Email)
+	if err == nil && existingUser != nil {
+		return nil, errors.New("this email already exists!")
+	}
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Password = string(hashedPassword)
+
+	// Create user
+	createdUser, err := s.userRepo.Create(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return createdUser, nil
+}
+
+// update user
+func (s *userServices) UpdateUser(id int, req *domain.UpdateUserRequest) (*domain.User, error) {
+	// Get existing user
+	user, err := s.userRepo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	
+	updateInfo := updateUserFields(user, req)
+
+	// Update in database
+	updatedUser, err := s.userRepo.Update(id, updateInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedUser, nil
+}
+
+// delete user
+func (s *userServices) DeleteUser(id int) error {
+	err := s.userRepo.Delete(id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // helper function 
-func updateUserFields(user *domain.User, req *domain.UpdateUserRequest) *domain.User {
+func updateUserFields(user *domain.User, req *domain.UpdateUserRequest) *domain.UpdateUserRequest {
 	if req.Name != "" {
         user.Name = req.Name
 	}
@@ -198,5 +186,5 @@ func updateUserFields(user *domain.User, req *domain.UpdateUserRequest) *domain.
 	user.IsActive = true
 	user.IsVerified = true
 
-	return user
+	return req
 }

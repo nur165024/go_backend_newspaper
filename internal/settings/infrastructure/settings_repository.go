@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin-quickstart/internal/settings/domain"
 	"math"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -90,7 +91,7 @@ func (r *settingsRepository) GetByID(id int) (*domain.Settings, error) {
 }
 
 // create
-func (r *settingsRepository) Create(settings *domain.Settings) (*domain.Settings, error) {
+func (r *settingsRepository) Create(settings *domain.CreateSettingsRequest) (*domain.Settings, error) {
 	query := `
 		INSERT INTO settings (key, value, category, data_type, is_public, is_editable)
 		VALUES 
@@ -105,19 +106,37 @@ func (r *settingsRepository) Create(settings *domain.Settings) (*domain.Settings
 	defer rows.Close()
 
 	if rows.Next() {
-		// Scan RETURNING values
-		err = rows.Scan(&settings.ID, &settings.CreatedAt, &settings.UpdatedAt)
+		var id int
+		var createdAt, updatedAt time.Time
+
+		err = rows.Scan(&id, &createdAt, &updatedAt)
 		if err != nil {
-				return nil, fmt.Errorf("failed to scan returned values: %w", err)
+			return nil, fmt.Errorf("failed to scan returned values: %w", err)
 		}
-		return settings, nil
+
+		// Create Settings struct with all filed
+		result := &domain.Settings{
+			ID:        id,
+			Key:       settings.Key,
+			Value:     settings.Value,
+			Category:  settings.Category,
+			DataType:  settings.DataType,
+			IsPublic:  settings.IsPublic,
+			IsEditable: settings.IsEditable,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		}
+
+		return result, nil
 	}
 
 	return nil, fmt.Errorf("no rows returned after insert")
 }
 
 // update
-func (r *settingsRepository) Update(id int, settings *domain.Settings) (*domain.Settings, error) {
+func (r *settingsRepository) Update(id int, settings *domain.UpdateSettingsRequest) (*domain.Settings, error) {
+	settings.ID = id
+
 	query := `
 		UPDATE settings
 		SET 
@@ -140,11 +159,24 @@ func (r *settingsRepository) Update(id int, settings *domain.Settings) (*domain.
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&settings.UpdatedAt)
+		var UpdatedAt time.Time
+		err = rows.Scan(&UpdatedAt)
 		if err != nil {
-				return nil, err
+			return nil, err
 		}
-		return settings, nil
+
+		result := &domain.Settings{
+			ID:        id,
+			Key:       settings.Key,
+			Value:     settings.Value,
+			Category:  settings.Category,
+			DataType:  settings.DataType,
+			IsPublic:  settings.IsPublic,
+			IsEditable: settings.IsEditable,
+			UpdatedAt: UpdatedAt,
+		}
+
+		return result, nil
 	}
 	
 	return nil, fmt.Errorf("Settings with id %d not found", id)
