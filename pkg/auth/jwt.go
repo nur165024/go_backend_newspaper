@@ -77,8 +77,11 @@ func (j *JWTSecret) generateToken(id int, name, email, userName, tokenType strin
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.secretKey))
+	tokenString, err := token.SignedString([]byte(j.secretKey))
+	
+	return tokenString, err
 }
+
 
 func (j *JWTSecret) ValidateToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
