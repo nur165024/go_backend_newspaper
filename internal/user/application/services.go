@@ -29,7 +29,7 @@ func NewUserServices(userRepo domain.UserRepository, refreshTokenRepo authDomain
 }
 
 // get all users
-func (s *userServices) GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (s *userServices) GetAllUsers(params *domain.QueryParams) (*domain.QueryResponse, error) {
 	users, err := s.userRepo.GetAll(params)
 	
 	if err != nil {

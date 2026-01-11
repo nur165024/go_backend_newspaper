@@ -7,5 +7,5 @@ type CategoryServices interface {
 	UpdateCategory(id int, req *domain.UpdateCategoryRequest) (*domain.Category, error)
 	DeleteCategory(id int) error
 	GetCategoryByID(id int) (*domain.Category, error)
-	GetAllCategories(params *domain.QueryParams) (*domain.QueryResult, error)
+	GetAllCategories(params *domain.QueryParams) (*domain.QueryResponse, error)
 }

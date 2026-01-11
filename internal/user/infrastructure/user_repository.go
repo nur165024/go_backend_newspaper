@@ -149,7 +149,7 @@ func (r *postgresUserRepository) GetByID(id int) (*domain.User, error) {
 }
 
 // get all users
-func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.QueryResponse, error) {
     // Validate sort parameters
     validSortFields := map[string]bool{
         "id": true, "name": true, "email": true, "created_at": true, "updated_at": true,
@@ -197,7 +197,7 @@ func (r *postgresUserRepository) GetAll(params *domain.QueryParams) (*domain.Que
     // Calculate total pages
     totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
 
-    return &domain.QueryResult{
+    return &domain.QueryResponse{
         Data:       users,
         TotalItem:  total,
         Page:       params.Page,

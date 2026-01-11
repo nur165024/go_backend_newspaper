@@ -19,7 +19,7 @@ func NewCategoryRepository(db *sqlx.DB) *categoryRepository {
 }
 
 // get all categories with search, sorting, pagination
-func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryResponse, error) {
 	// Validate sort parameters
 	validSortFields := map[string]bool{
 		"id": true, "name": true, "slug": true, "created_at": true, "updated_at": true, "sort_order": true,
@@ -71,7 +71,7 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 	// Calculate total pages
 	totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
 
-	return &domain.QueryResult{
+	return &domain.QueryResponse{
 		Data:       categories,
 		TotalItem:  total,
 		Page:       params.Page,

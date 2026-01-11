@@ -8,6 +8,6 @@ type UserServices interface {
 	DeleteUser(id int) error
 	GetUserByID(id int) (*domain.User, error)
 	GetUserByEmail(email string) (*domain.User, error)
-	GetAllUsers(params *domain.QueryParams) (*domain.QueryResult, error)
+	GetAllUsers(params *domain.QueryParams) (*domain.QueryResponse, error)
 	LoginUser(email, password string) (*domain.LoginResponse, error)
 }

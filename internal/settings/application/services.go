@@ -16,7 +16,7 @@ func NewSettingsServices(settingsRepo domain.SettingsRepository) *settingsServic
 }
 
 // get all
-func (s *settingsServices) GetAllSettings(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (s *settingsServices) GetAllSettings(params *domain.QueryParams) (*domain.QueryResponse, error) {
 	settings, err := s.settingsRepo.GetAll(params)
 
 	if err != err {

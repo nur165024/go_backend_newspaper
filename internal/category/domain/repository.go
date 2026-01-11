@@ -11,7 +11,7 @@ type QueryParams struct {
 	Search string `json:"search" form:"search" query:"search"`
 }
 
-type QueryResult struct {
+type QueryResponse struct {
 	Data       []*Category `json:"data"`
 	TotalItem  int64       `json:"total_item"`
 	Page       int         `json:"page"`
@@ -20,7 +20,7 @@ type QueryResult struct {
 }
 
 type CategoryRepository interface {
-	GetAll(params *QueryParams) (*QueryResult, error)
+	GetAll(params *QueryParams) (*QueryResponse, error)
 	GetByID(id int) (*Category, error)
 	Create(category *CreateCategoryRequest) (*Category, error)
 	Update(id int, category *UpdateCategoryRequest) (*Category, error)

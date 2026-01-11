@@ -11,7 +11,7 @@ type QueryParams struct {
 	Search string `json:"search" form:"search" query:"search"`
 }
 
-type QueryResult struct {
+type QueryResponse struct {
 	Data       []*User `json:"data"`
 	TotalItem  int64   `json:"total_item"`
 	Page       int     `json:"page"`
@@ -20,7 +20,7 @@ type QueryResult struct {
 }
 
 type UserRepository interface {
-	GetAll(params *QueryParams) (*QueryResult, error)
+	GetAll(params *QueryParams) (*QueryResponse, error)
 	GetByID(id int) (*User, error)
 	GetByEmail(email string) (*User, error)
 	Create(user *CreateUserRequest) (*User, error)

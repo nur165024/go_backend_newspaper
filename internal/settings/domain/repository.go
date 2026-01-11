@@ -8,7 +8,7 @@ type QueryParams struct {
 	Order    string `json:"order" form:"order" query:"order"`
 }
 
-type QueryResult struct {
+type QueryResponse struct {
 	Data       []*Settings `json:"total_count"`
 	TotalItem  int64       `json:"total_item"`
 	Page       int         `json:"page"`
@@ -17,7 +17,7 @@ type QueryResult struct {
 }
 
 type SettingsRepository interface {
-	GetAll(params *QueryParams) (*QueryResult, error)
+	GetAll(params *QueryParams) (*QueryResponse, error)
 	GetByID(id int) (*Settings, error)
 	Create(settings *CreateSettingsRequest) (*Settings, error)
 	Update(id int, settings *UpdateSettingsRequest) (*Settings, error)

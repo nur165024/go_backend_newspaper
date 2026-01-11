@@ -10,7 +10,12 @@ import (
 func SetupAllModules(db *sqlx.DB, router *gin.Engine) {
 	middleware.SetupGlobalMiddleWare(router)
 
+	// user
 	SetupUserModule(db, router)
+	// category
 	SetupCategoryModule(db, router)
+	// settings
 	SetupSettingsModule(db, router)
+	// advertisement
+	SetupAdsModule(db, router)
 }

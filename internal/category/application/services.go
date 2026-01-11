@@ -16,7 +16,7 @@ func NewCategoryServices(categoryRepo domain.CategoryRepository) *categoryServic
 }
 
 // get all
-func (s *categoryServices) GetAllCategories(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (s *categoryServices) GetAllCategories(params *domain.QueryParams) (*domain.QueryResponse, error) {
 	categories, err := s.categoryRepo.GetAll(params)
 
 	if err != nil {

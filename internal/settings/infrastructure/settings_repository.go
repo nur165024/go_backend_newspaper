@@ -18,7 +18,7 @@ func NewSettingsRepository(db *sqlx.DB) *settingsRepository {
 }
 
 // get all
-func (r *settingsRepository) GetAll(params *domain.QueryParams) (*domain.QueryResult, error) {
+func (r *settingsRepository) GetAll(params *domain.QueryParams) (*domain.QueryResponse, error) {
 	// validation sort parameters
 	validSortFields := map[string]bool{"id": true, "key": true, "value": true, "category": true, "data_type": true}
 	// validation sort parameters
@@ -69,7 +69,7 @@ func (r *settingsRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 	// Calculate total pages
 	totalPages := int(math.Ceil(float64(total) / float64(params.PageSize)))
 
-	return &domain.QueryResult{
+	return &domain.QueryResponse{
 		Data:       settings,
 		TotalItem:  total,
 		TotalPages: totalPages,
