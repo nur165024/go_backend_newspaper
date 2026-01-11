@@ -46,17 +46,18 @@ func (r *settingsRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 			return nil, err
 	}
 
-	// Build main query with pagination - NOW SAFE
+	// Build main query with pagination
 	offset := (params.Page - 1) * params.PageSize
 	query := fmt.Sprintf(`
-		SELECT id, key, value, category, data_type
-			FROM settings
-			WHERE 1=1 %s
-			ORDER BY %s %s
-			LIMIT %d OFFSET %d`, 
-		whereClause, sortBy, order, len(args)+1, len(args)+2)
+    SELECT id, key, value, description, category, data_type, is_public, is_editable, created_at, updated_at
+        FROM settings
+        WHERE 1=1 %s
+        ORDER BY %s %s
+        LIMIT $%d OFFSET $%d`, 
+    whereClause, sortBy, order, len(args)+1, len(args)+2)
 
 	args = append(args, params.PageSize, offset)
+
 
 	// Execute query
 	var settings []*domain.Settings

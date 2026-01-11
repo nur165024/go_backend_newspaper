@@ -12,7 +12,6 @@ type Category struct {
 	IsActive        bool   `db:"is_active" json:"is_active"`
 	MetaTitle       string `db:"meta_title" json:"meta_title"`
 	MetaDescription string `db:"meta_description" json:"meta_description"`
-	MetaKeywords    string `db:"meta_keywords" json:"meta_keywords"`
 	CreatedAt       time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt       time.Time `db:"updated_at" json:"updated_at"`
 }
@@ -27,7 +26,6 @@ type categoryRequest struct {
 	IsActive        bool   `json:"is_active"`
 	MetaTitle       string `json:"meta_title"`
 	MetaDescription string `json:"meta_description"`
-	MetaKeywords    string `json:"meta_keywords"`
 }
 
 // Create with validation

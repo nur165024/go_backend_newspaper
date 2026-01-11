@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS categories (
     image_url VARCHAR(255),
     meta_title VARCHAR(255),
     meta_description TEXT,
-    meta_keywords TEXT,
 );
 
 --------------------------------------------------------------------------

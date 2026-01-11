@@ -20,13 +20,25 @@ func NewUserRepository(db *sqlx.DB) *postgresUserRepository {
 
 // create user
 func (r *postgresUserRepository) Create(user *domain.CreateUserRequest) (*domain.User, error) {
+	params := map[string]interface{}{
+		"name":            user.Name,
+		"user_name":       user.UserName,
+		"email":           user.Email,
+		"password":        user.Password,
+		"designation":     user.Designation,
+		"bio":             user.Bio,
+		"profile_picture": user.ProfilePicture,
+		"is_active":       user.IsActive,
+		"is_verified":     user.IsVerified,
+	}
+
 	query := `
 	INSERT INTO users (name, user_name, email, password, designation, bio, profile_picture, is_active, is_verified)
 	VALUES (:name, :user_name, :email, :password, :designation, :bio, :profile_picture, :is_active, :is_verified)
 	RETURNING id, created_at, updated_at
 	`
 
-	rows, err := r.db.NamedQuery(query, user)
+	rows, err := r.db.NamedQuery(query, params)
 	if err != nil {
 		return nil, err
 	}
@@ -64,25 +76,28 @@ func (r *postgresUserRepository) Create(user *domain.CreateUserRequest) (*domain
 
 // update user
 func (r *postgresUserRepository) Update(id int, user *domain.UpdateUserRequest) (*domain.User, error) {
-	user.ID = id
+	params := map[string]interface{}{
+		"id":              id,
+		"name":            user.Name,
+		"user_name":       user.UserName,
+		"email":           user.Email,
+		"designation":     user.Designation,
+		"bio":             user.Bio,
+		"profile_picture": user.ProfilePicture,
+		"is_active":       user.IsActive,
+		"is_verified":     user.IsVerified,
+	}
 
 	query := `
 		UPDATE users 
-		SET 
-		name = :name, 
-		user_name = :user_name, 
-		email = :email, 
-		designation = :designation, 
-		bio = :bio, 
-		profile_picture = :profile_picture,
-		is_active = :is_active, 
-		is_verified = :is_verified, 
-		updated_at = NOW()
+		SET name = :name, user_name = :user_name, email = :email, 
+		    designation = :designation, bio = :bio, profile_picture = :profile_picture,
+		    is_active = :is_active, is_verified = :is_verified, updated_at = NOW()
 		WHERE id = :id
-		RETURNING updated_at
+		RETURNING created_at, updated_at
 	`
 
-	rows, err := r.db.NamedQuery(query, user)
+	rows, err := r.db.NamedQuery(query, params)
 
 	if err != nil {
 		return nil, err
@@ -91,9 +106,10 @@ func (r *postgresUserRepository) Update(id int, user *domain.UpdateUserRequest) 
 
 	if rows.Next() {
 		var UpdatedAt time.Time
-		err = rows.Scan(&UpdatedAt)
+		var createdAt, updatedAt time.Time
+		err = rows.Scan(&createdAt, &updatedAt)
 		if err != nil {
-				return nil, err
+			return nil, err
 		}
 
 		result := &domain.User{

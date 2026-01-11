@@ -22,7 +22,7 @@ func setupAdsRoutes(router *gin.Engine, adsHandler *adsInterfaces.AdsHandler) {
 	// Load JWT config
 	authMiddleware := middleware.GetAuthMiddleware()
 	
-	adsGroup := router.Group("/api/v1/ads")
+	adsGroup := router.Group("/api/v1/advertisement")
 	// public routes
 	adsGroup.GET("/", adsHandler.GetAllAds)
 	adsGroup.GET("/:id", adsHandler.GetAdsByID)

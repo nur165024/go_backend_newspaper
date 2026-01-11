@@ -106,9 +106,6 @@ func updateCategoryFields(category *domain.Category, req *domain.UpdateCategoryR
 	if req.MetaDescription != "" {
 		category.MetaDescription = req.MetaDescription
 	}
-	if req.MetaKeywords != "" {
-		category.MetaKeywords = req.MetaKeywords
-	}
 
 	return req
 }

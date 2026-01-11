@@ -27,26 +27,26 @@ type User struct {
 
 // user request
 type userRequest struct {
-    Name     string `json:"name" binding:"required"`
-    UserName string `json:"user_name"`
-    Email    string `json:"email" binding:"required,email"`
-    Designation string `json:"designation"`
-    Bio string `json:"bio"`
-    ProfilePicture string `json:"profile_picture"`
-    IsActive bool `json:"is_active"`
-    IsVerified bool `json:"is_verified"`
+    Name           string `json:"name" binding:"required" db:"name"`
+    UserName       string `json:"user_name" db:"user_name"`
+    Email          string `json:"email" binding:"required,email" db:"email"`
+    Designation    string `json:"designation" db:"designation"`
+    Bio            string `json:"bio" db:"bio"`
+    ProfilePicture string `json:"profile_picture" db:"profile_picture"`
+    IsActive       bool   `json:"is_active" db:"is_active"`
+    IsVerified     bool   `json:"is_verified" db:"is_verified"`
 }
 
 // create user request
 type CreateUserRequest struct {
     userRequest
-    Password string `json:"password" binding:"required,min=6"`
+    Password string `json:"password" binding:"required,min=6" db:"password"`
 }
 
 // update user request
 type UpdateUserRequest struct {
     userRequest
-    ID int `json:"id"`
+    ID int `json:"id" db:"id"`
 }
 
 // login request

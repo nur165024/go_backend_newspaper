@@ -52,7 +52,7 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 	// Build main query with pagination - NOW SAFE
 	offset := (params.Page - 1) * params.PageSize
 	query := fmt.Sprintf(`
-			SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords, created_at, updated_at
+			SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, created_at, updated_at
 			FROM categories %s 
 			ORDER BY %s %s 
 			LIMIT $%d OFFSET $%d`,
@@ -83,7 +83,7 @@ func (r *categoryRepository) GetAll(params *domain.QueryParams) (*domain.QueryRe
 // get by id
 func (r *categoryRepository) GetByID(id int) (*domain.Category, error) {
 	query := `
-		SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords, created_at, updated_at
+		SELECT id, name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, created_at, updated_at
 		FROM categories
 		WHERE id = $1
 	`
@@ -102,9 +102,9 @@ func (r *categoryRepository) GetByID(id int) (*domain.Category, error) {
 func (r *categoryRepository) Create(category *domain.CreateCategoryRequest) (*domain.Category, error) {
 	query := `
 		INSERT INTO categories 
-		(name, slug, description, image_url, sort_order, is_active, meta_title, meta_description, meta_keywords) 
+		(name, slug, description, image_url, sort_order, is_active, meta_title, meta_description) 
 		VALUES 
-		(:name, :slug, :description, :image_url, :sort_order, :is_active, :meta_title, :meta_description, :meta_keywords)
+		(:name, :slug, :description, :image_url, :sort_order, :is_active, :meta_title, :meta_description)
 		RETURNING id, created_at, updated_at
 	`
 
@@ -134,7 +134,6 @@ func (r *categoryRepository) Create(category *domain.CreateCategoryRequest) (*do
 			IsActive: category.IsActive,
 			MetaTitle: category.MetaTitle,
 			MetaDescription: category.MetaDescription,
-			MetaKeywords: category.MetaKeywords,
 			CreatedAt: createdAt,
 			UpdatedAt: updatedAt,
 		}
@@ -159,8 +158,7 @@ func (r *categoryRepository) Update(id int, category *domain.UpdateCategoryReque
 		sort_order = :sort_order, 
 		is_active = :is_active,
 		meta_title = :meta_title, 
-		meta_description = :meta_description, 
-		meta_keywords = :meta_keywords,
+		meta_description = :meta_description,
 		updated_at = NOW()
 		WHERE id = :id
 		RETURNING updated_at
@@ -191,7 +189,6 @@ func (r *categoryRepository) Update(id int, category *domain.UpdateCategoryReque
 			IsActive: category.IsActive,
 			MetaTitle: category.MetaTitle,
 			MetaDescription: category.MetaDescription,
-			MetaKeywords: category.MetaKeywords,
 			UpdatedAt: updatedAt,
 		}
 
